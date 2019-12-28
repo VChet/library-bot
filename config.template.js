@@ -19,7 +19,7 @@ module.exports = {
     host: "127.0.0.1",
     port: 9150,
     username: "",
-    password: "",
+    password: ""
   },
   mongoUrl: "mongodb://localhost/library_bot",
   ...overwriteConfig

@@ -42,7 +42,7 @@ const bot = new TelegramBot(config.token, {
 });
 
 // TODO: move functions to separate files
-bot.onText(/\/start/, (msg) => {
+bot.onText(/\/start/, msg => {
   const chatId = msg.chat.id;
   const sender = msg.from;
   const response = `Привет, ${sender.username}`;
@@ -56,20 +56,17 @@ bot.onText(/\/add_book (.+) (.+)/, (msg, match) => {
   const author = match[1];
   const name = match[2];
   const response = `Добавить книгу? Автор: ${author}. Название: ${name}`;
-  data = { name, author }
+  data = { name, author };
 
   const opts = {
     reply_markup: JSON.stringify({
-      keyboard: [
-        ['Да'],
-        ['Нет']
-      ]
+      keyboard: [["Да"], ["Нет"]]
     })
-  }
+  };
   bot.sendMessage(chatId, response, opts);
 });
 
-bot.onText(/Да/, (msg) => {
+bot.onText(/Да/, msg => {
   if (state.isAddingBook) {
     const chatId = msg.chat.id;
 
@@ -86,7 +83,7 @@ bot.onText(/Да/, (msg) => {
   }
 });
 
-bot.onText(/Нет/, (msg) => {
+bot.onText(/Нет/, msg => {
   if (state.isAddingBook) {
     const chatId = msg.chat.id;
 
@@ -100,7 +97,7 @@ bot.onText(/Нет/, (msg) => {
   }
 });
 
-bot.onText(/\/take_book/, (msg) => {
+bot.onText(/\/take_book/, msg => {
   state.isSearchingBook = true;
   const chatId = msg.chat.id;
   const response = "Введи название книги или автора";
@@ -108,23 +105,27 @@ bot.onText(/\/take_book/, (msg) => {
   bot.sendMessage(chatId, response);
 });
 
-bot.on("message", (msg) => {
+bot.on("message", msg => {
   if (state.isSearchingBook) {
     const chatId = msg.chat.id;
 
-    Book.find({ $text: { $search: msg.text } }).lean().exec((error, books) => {
-      if (error) return console.log(error);
-      if (books.length) {
-        const response = books.map((book) => {
-          let item = book.author ? book.author + ' ' : '';
-          item += book.name;
-          return item;
-        }).join(", ");
-        bot.sendMessage(chatId, response);
-      } else {
-        bot.sendMessage(chatId, "Ничего не нашел");
-        state.isSearchingBook = false;
-      }
-    })
+    Book.find({ $text: { $search: msg.text } })
+      .lean()
+      .exec((error, books) => {
+        if (error) return console.log(error);
+        if (books.length) {
+          const response = books
+            .map(book => {
+              let item = book.author ? book.author + " " : "";
+              item += book.name;
+              return item;
+            })
+            .join(", ");
+          bot.sendMessage(chatId, response);
+        } else {
+          bot.sendMessage(chatId, "Ничего не нашел");
+          state.isSearchingBook = false;
+        }
+      });
   }
 });
