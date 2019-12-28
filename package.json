@@ -15,6 +15,9 @@
     "socks5-https-client": "^1.2.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.2"
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "nodemon": "^2.0.2",
+    "prettier": "^1.19.1"
   }
 }
