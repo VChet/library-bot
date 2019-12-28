@@ -20,7 +20,7 @@ const schema = new Schema({
   role: {
     type: String,
     required: true,
-    enum: ["Admin", "User"],
+    enum: ["Admin", "User", "Guest"],
     default: "User"
   },
   joined: {
