@@ -25,6 +25,7 @@ exports.startBot = async function() {
 }
 
 // User requests handling
+const { User } = require("../models/user");
 const stage = new Stage(scenes);
 
 // FIXME: what is this for?
@@ -34,7 +35,23 @@ bot.use(session());
 bot.use(stage.middleware());
 
 bot.start(ctx => {
-  ctx.reply(`Привет, ${ctx.from.username}`);
+  const userData = ctx.from;
+  User.findOne({ telegram_id: userData.id }).lean().exec((error, user) => {
+    if (error) console.log({ error });
+
+    if (user) {
+      ctx.reply(`Снова привет, ${userData.username}`);
+    } else {
+      const newUser = new User({
+        telegram_id: userData.id,
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        username: userData.username
+      });
+      newUser.save();
+      ctx.reply(`Привет, ${userData.username}`);
+    }
+  })
 });
 
 bot.command('take_book', ctx => {
