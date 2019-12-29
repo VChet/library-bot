@@ -21,7 +21,7 @@ const schema = new Schema({
     type: String,
     required: true,
     enum: ["Admin", "User", "Guest"],
-    default: "User"
+    default: "Guest"
   },
   joined: {
     type: Date,
