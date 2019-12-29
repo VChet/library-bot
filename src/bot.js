@@ -8,16 +8,18 @@ const config = require("../config");
 const { scenes } = require("./scenes/index");
 const { leave } = Stage;
 
+let proxy = {};
+if (config.useProxy) {
 const socksAgent = new Agent({
-  socksHost: config.socks.host,
-  socksPort: parseInt(config.socks.port),
-  socksUsername: config.socks.username,
-  socksPassword: config.socks.password,
+    socksHost: config.proxy.host,
+    socksPort: parseInt(config.proxy.port),
+    socksUsername: config.proxy.username,
+    socksPassword: config.proxy.password,
 });
+  proxy = { telegram: { agent: socksAgent } };
+}
 
-const bot = new Telegraf(config.token, {
-  telegram: { agent: socksAgent }
-});
+const bot = new Telegraf(config.token, proxy);
 
 exports.startBot = async function() {
   await bot.launch();

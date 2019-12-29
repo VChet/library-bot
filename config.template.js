@@ -15,7 +15,8 @@ switch (process.env.NODE_ENV) {
 
 module.exports = {
   token: "",
-  socks: {
+  useProxy: false,
+  proxy: {
     host: "127.0.0.1",
     port: 9150,
     username: "",
