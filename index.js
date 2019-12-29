@@ -108,24 +108,19 @@ bot.onText(/\/take_book/, msg => {
 bot.on("message", msg => {
   if (state.isSearchingBook) {
     const chatId = msg.chat.id;
-
-    Book.find({ $text: { $search: msg.text } })
-      .lean()
-      .exec((error, books) => {
-        if (error) return console.log(error);
-        if (books.length) {
-          const response = books
-            .map(book => {
-              let item = book.author ? book.author + " " : "";
-              item += book.name;
-              return item;
-            })
-            .join(", ");
-          bot.sendMessage(chatId, response);
-        } else {
-          bot.sendMessage(chatId, "Ничего не нашел");
-          state.isSearchingBook = false;
-        }
-      });
+    Book.find({ $text: { $search: msg.text } }).lean().exec((error, books) => {
+      if (error) return console.log(error);
+      if (books.length) {
+        const response = books.map(book => {
+          let item = book.author ? book.author + " " : "";
+          item += book.name;
+          return item;
+        }).join(", ");
+        bot.sendMessage(chatId, response);
+      } else {
+        bot.sendMessage(chatId, "Ничего не нашел");
+        state.isSearchingBook = false;
+      }
+    });
   }
 });
