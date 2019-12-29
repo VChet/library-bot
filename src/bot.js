@@ -1,14 +1,11 @@
 const Telegraf = require("telegraf");
-const config = require("../config");
 const session = require("telegraf/session");
 const Stage = require("telegraf/stage");
-const { leave } = Stage;
 const Agent = require("socks5-https-client/lib/Agent");
 
+const config = require("../config");
 const { scenes } = require("./scenes/index");
-
-const stage = new Stage(scenes);
-stage.command("cancel", leave());
+const { leave } = Stage;
 
 const socksAgent = new Agent({
   socksHost: config.socks.host,
@@ -21,10 +18,13 @@ const bot = new Telegraf(config.token, {
   telegram: { agent: socksAgent }
 });
 
+const stage = new Stage(scenes);
+stage.command("cancel", leave());
+
 bot.use(session());
 bot.use(stage.middleware());
 
-bot.start(async ctx => {
+bot.start(ctx => {
   ctx.scene.enter("searchBookScene");
 });
 
