@@ -26,11 +26,17 @@ exports.startBot = async function() {
 
 // User requests handling
 const stage = new Stage(scenes);
+
+// FIXME: what is this for?
 stage.command("cancel", leave());
 
 bot.use(session());
 bot.use(stage.middleware());
 
 bot.start(ctx => {
+  ctx.reply(`Привет, ${ctx.from.username}`);
+});
+
+bot.command('take_book', ctx => {
   ctx.scene.enter("searchBookScene");
 });
