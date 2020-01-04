@@ -74,10 +74,17 @@ searchBookScene.action(/get.+/, (ctx) => {
 });
 
 searchBookScene.action("confirm", ctx => {
-  // TODO: add book to user library
+  Book.findByIdAndUpdate(
+    ctx.scene.session.searchBook.selected._id,
+    { $set: { user: ctx.session.user._id } },
+    { new: true },
+    (error, book) => {
+      if (error) console.log(error);
 
-  ctx.reply("Теперь книга находится у вас! Вы можете проверить список взятых книг командой /books list");
-  return ctx.scene.leave();
+      ctx.reply("Теперь книга находится у вас! Вы можете проверить список взятых книг командой /books list");
+      return ctx.scene.leave();
+    }
+  );
 });
 
 searchBookScene.action("findAgain", ctx => {
