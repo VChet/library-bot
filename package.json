@@ -4,14 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "startTelegraf": "nodemon indexTelegraf.js"
+    "start": "nodemon index.js"
   },
   "author": "VChet",
   "license": "ISC",
   "dependencies": {
     "mongoose": "^5.8.3",
-    "node-telegram-bot-api": "^0.40.0",
     "request": "^2.88.0",
     "socks5-https-client": "^1.2.1",
     "telegraf": "^3.34.1"
