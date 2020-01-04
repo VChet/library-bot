@@ -22,6 +22,7 @@ function startSceneHandler(bot) {
       if (error) console.log({ error });
 
       if (user) {
+        ctx.session.user = user;
         ctx.reply(`Снова привет, ${userData.username}`);
       } else {
         const newUser = new User({
@@ -31,6 +32,7 @@ function startSceneHandler(bot) {
           username: userData.username
         });
         newUser.save();
+        ctx.session.user = newUser;
         ctx.reply(`Привет, ${userData.username}`);
       }
     });
