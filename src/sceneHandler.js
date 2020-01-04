@@ -8,10 +8,12 @@ const Stage = require("telegraf/stage");
 const { searchBookScene } = require("./scenes/searchBook");
 const { returnBookScene } = require("./scenes/returnBook");
 const { availableBooksScene } = require("./scenes/availableBooks");
+const { unavailableBooksScene } = require("./scenes/unavailableBooks");
 const scenes = [
   searchBookScene,
   returnBookScene,
   availableBooksScene,
+  unavailableBooksScene
 ];
 const stage = new Stage(scenes);
 
@@ -47,9 +49,13 @@ function startSceneHandler(bot) {
   bot.hears("/books", ctx => {
     ctx.reply("Выберите действие:", Extra.HTML().markup(m =>
       m.inlineKeyboard([
-        m.callbackButton("Взять книгу", "/books take"),
-        m.callbackButton("Вернуть книгу", "/books return"),
-        m.callbackButton("Доступные книги", "/books available"),
+        [
+          m.callbackButton("Взять книгу", "/books take"),
+          m.callbackButton("Вернуть книгу", "/books return")
+        ], [
+          m.callbackButton("Доступные книги", "/books available"),
+          m.callbackButton("Недоступные книги", "/books unavailable")
+        ]
       ])
     ));
   });
@@ -64,5 +70,9 @@ function startSceneHandler(bot) {
 
   bot.action("/books available", ctx => {
     ctx.scene.enter("availableBooksScene");
+  });
+
+  bot.action("/books unavailable", ctx => {
+    ctx.scene.enter("unavailableBooksScene");
   });
 }
