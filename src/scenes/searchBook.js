@@ -3,6 +3,7 @@ const { Extra } = require("telegraf");
 
 const { declOfNum } = require("../helpers");
 const { Book } = require("../../models/book");
+const { User } = require("../../models/user");
 
 const searchBookScene = new Scene("searchBookScene");
 
@@ -64,13 +65,26 @@ searchBookScene.action(/get.+/, (ctx) => {
   const selectedBook = ctx.match[0].split(" ")[1];
   const filterBySelectedBook = ctx.scene.session.searchBook.foundBooks.filter(book => book._id.toString() === selectedBook.toString());
   ctx.scene.session.searchBook.selected = filterBySelectedBook[0];
-  return ctx.reply(
-    `Выбранная книга: ${filterBySelectedBook[0].author} — ${filterBySelectedBook[0].name}.`,
-    keyboard([
-      { key: "confirm", value: "Подтвердить выбор" },
-      { key: "back", value: "Назад" }
-    ])
-  );
+  if (ctx.scene.session.searchBook.selected.user) {
+    User.findById(ctx.scene.session.searchBook.selected.user).lean().exec((error, user) => {
+      if (error) console.log(error);
+
+      return ctx.reply(
+        `${filterBySelectedBook[0].name} сейчас у @${user.username}`,
+        keyboard([
+          { key: "back", value: "Назад" }
+        ])
+      );
+    });
+  } else {
+    return ctx.reply(
+      `Выбранная книга: ${filterBySelectedBook[0].author} — ${filterBySelectedBook[0].name}.`,
+      keyboard([
+        { key: "confirm", value: "Подтвердить выбор" },
+        { key: "back", value: "Назад" }
+      ])
+    );
+  }
 });
 
 searchBookScene.action("confirm", ctx => {
@@ -106,7 +120,7 @@ function booksKeyboard(books) {
   return Extra.HTML().markup(m =>
     m.inlineKeyboard(
       books.map(book => [
-        m.callbackButton(`${book.author} — ${book.name}`, `get ${book._id}`)
+        m.callbackButton(`${book.author} — ${book.name} ${book.user ? '❌' : ''}`, `get ${book._id}`)
       ])
     )
   );
