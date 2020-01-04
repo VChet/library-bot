@@ -1,7 +1,7 @@
 {
   "root": true,
   "parserOptions": {
-    "ecmaVersion": 2018
+    "ecmaVersion": 2019
   },
   "rules": {
     "accessor-pairs": [2],
@@ -42,7 +42,7 @@
     "id-blacklist": [0],
     "id-length": [0],
     "id-match": [0],
-    "indent": [2, 2, {"ignoreComments": true}],
+    "indent": [2, 2, {"ignoreComments": true}, {"SwitchCase": 1}],
     "jsx-quotes": [2, "prefer-double"],
     "key-spacing": [0],
     "keyword-spacing": [2],
@@ -127,7 +127,7 @@
       "ignoreEOLComments": true,
       "exceptions": {
         "Property": true,
-        "VariableDeclarator": true 
+        "VariableDeclarator": true
       }}
     ],
     "no-multi-str": [2],
@@ -243,9 +243,7 @@
     "yoda": [2, "never"]
   },
   "env": {
-    "browser": true,
     "es6": true,
-    "node": true,
-    "mocha": true
+    "node": true
   }
 }
