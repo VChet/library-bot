@@ -1,5 +1,4 @@
 const Scene = require("telegraf/scenes/base");
-const { Extra } = require("telegraf");
 
 const { declOfNum } = require("../helpers");
 const { Book } = require("../../models/book");
@@ -17,6 +16,7 @@ unavailableBooksScene.enter(ctx => {
     ctx.scene.session.unavailableBooks = books;
     const booksList = books.map(book => `${book.author} — ${book.name} (@${book.user.username})`).join("\n");
     ctx.reply(`Сейчас на руках ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}:\n${booksList}`);
+    return ctx.scene.leave();
   });
 });
 
