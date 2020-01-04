@@ -17,7 +17,8 @@ const schema = new Schema({
   },
   user: {
     type: Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
+    default: null
   },
   is_archived: {
     type: Boolean,
