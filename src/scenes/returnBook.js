@@ -21,7 +21,7 @@ returnBookScene.enter(ctx => {
         booksKeyboard(books)
       );
     } else {
-      ctx.reply("У вас нет невозвращенных книг.");
+      ctx.reply("У вас нет невозвращенных книг");
       return ctx.scene.leave();
     }
   });

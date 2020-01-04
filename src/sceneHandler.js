@@ -53,6 +53,9 @@ function startSceneHandler(bot) {
 
   bot.action("/books take", ctx => {
     ctx.scene.enter("searchBookScene");
+  });
+
+  bot.action("/books return", ctx => {
     ctx.scene.enter("returnBookScene");
   });
 }
