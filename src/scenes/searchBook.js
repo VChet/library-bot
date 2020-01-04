@@ -18,25 +18,24 @@ searchBookScene.enter(ctx => {
 
 searchBookScene.on("message", ctx => {
   ctx.scene.session.searchBook = {
-    book: "",
-    foundBooks: [],
+    query: "",
+    results: [],
     selected: {}
   };
 
-  ctx.scene.session.searchBook.book = ctx.message.text;
+  ctx.scene.session.searchBook.query = ctx.message.text;
 
   Book.find({ $text: { $search: ctx.message.text } }).lean().exec((error, books) => {
     if (error) return console.log(error);
     if (books.length) {
       if (books.length > 100) {
-        ctx.scene.session.searchBook.foundBooks = books.slice(0, 99);
+        ctx.scene.session.searchBook.results = books.slice(0, 99);
       } else {
-        ctx.scene.session.searchBook.foundBooks = books;
+        ctx.scene.session.searchBook.results = books;
       }
 
-      const foundBooks = ctx.scene.session.searchBook.foundBooks.length;
       ctx.reply(
-        `Найдено ${foundBooks} ${declOfNum(foundBooks, ["книга", "книги", "книг"])}:`,
+        `Найдено ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}:`,
         booksKeyboard(books)
       );
     } else {
@@ -51,34 +50,27 @@ searchBookScene.on("message", ctx => {
   });
 });
 
-searchBookScene.hears("Отменить поиск", ctx => {
-  ctx.reply("Поиск отменен");
-  return ctx.scene.leave();
-});
-
 searchBookScene.action("cancel", (ctx) => {
   ctx.reply("Поиск отменен");
   return ctx.scene.leave();
 });
 
-searchBookScene.action(/get.+/, (ctx) => {
-  const selectedBook = ctx.match[0].split(" ")[1];
-  const filterBySelectedBook = ctx.scene.session.searchBook.foundBooks.filter(book => book._id.toString() === selectedBook.toString());
-  ctx.scene.session.searchBook.selected = filterBySelectedBook[0];
-  if (ctx.scene.session.searchBook.selected.user) {
-    User.findById(ctx.scene.session.searchBook.selected.user).lean().exec((error, user) => {
+searchBookScene.action(/get (.+)/, (ctx) => {
+  const bookId = ctx.match[1];
+  const bookData = ctx.scene.session.searchBook.results.find(book => book._id.toString() === bookId.toString());
+  ctx.scene.session.searchBook.selected = bookData;
+  if (bookData.user) {
+    User.findById(bookData.user).lean().exec((error, user) => {
       if (error) console.log(error);
 
       return ctx.reply(
-        `${filterBySelectedBook[0].name} сейчас у @${user.username}`,
-        keyboard([
-          { key: "back", value: "Назад" }
-        ])
+        `${bookData.name} сейчас у @${user.username}`,
+        keyboard([{ key: "back", value: "Назад" }])
       );
     });
   } else {
     return ctx.reply(
-      `Выбранная книга: ${filterBySelectedBook[0].author} — ${filterBySelectedBook[0].name}.`,
+      `Выбранная книга: ${bookData.author} — ${bookData.name}.`,
       keyboard([
         { key: "confirm", value: "Подтвердить выбор" },
         { key: "back", value: "Назад" }
