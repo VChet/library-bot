@@ -1,16 +1,18 @@
 const Scene = require("telegraf/scenes/base");
-const { Book } = require("../../models/book");
 const { Extra } = require("telegraf");
+
+const { declOfNum } = require("../helpers");
+const { Book } = require("../../models/book");
 
 const searchBookScene = new Scene("searchBookScene");
 
 searchBookScene.enter(ctx => {
-  ctx.reply("Введите название книги и автора.", keyboard([
-    {
-      key: "cancel",
-      value: "Отменить поиск"
-    }
-  ]));
+  ctx.reply(
+    "Введите название книги и автора.",
+    keyboard([
+      { key: "cancel", value: "Отменить поиск" }
+    ])
+  );
 });
 
 searchBookScene.on("message", ctx => {
@@ -31,18 +33,19 @@ searchBookScene.on("message", ctx => {
         ctx.scene.session.searchBook.foundBooks = books;
       }
 
-      ctx.reply(`Найдено ${ctx.scene.session.searchBook.foundBooks.length} книг:`, booksKeyboard(books));
+      const foundBooks = ctx.scene.session.searchBook.foundBooks.length;
+      ctx.reply(
+        `Найдено ${foundBooks} ${declOfNum(foundBooks, ["книга", "книги", "книг"])}:`,
+        booksKeyboard(books)
+      );
     } else {
-      ctx.reply("Ничего не найдено", keyboard([
-        {
-          key: "findAgain",
-          value: "Искать ещё"
-        },
-        {
-          key: "cancel",
-          value: "Отмена"
-        }
-      ]));
+      ctx.reply(
+        "Ничего не найдено",
+        keyboard([
+          { key: "findAgain", value: "Искать ещё" },
+          { key: "cancel", value: "Отмена" }
+        ])
+      );
     }
   });
 });
@@ -61,20 +64,17 @@ searchBookScene.action(/get.+/, (ctx) => {
   const selectedBook = ctx.match[0].split(" ")[1];
   const filterBySelectedBook = ctx.scene.session.searchBook.foundBooks.filter(book => book._id.toString() === selectedBook.toString());
   ctx.scene.session.searchBook.selected = filterBySelectedBook[0];
-  return ctx.reply(`Выбранная книга: ${filterBySelectedBook[0].author} — ${filterBySelectedBook[0].name}.`, keyboard([
-    {
-      key: "confirm",
-      value: "Подтвердить выбор",
-    },
-    {
-      key: "back",
-      value: "Назад",
-    }
-  ]));
+  return ctx.reply(
+    `Выбранная книга: ${filterBySelectedBook[0].author} — ${filterBySelectedBook[0].name}.`,
+    keyboard([
+      { key: "confirm", value: "Подтвердить выбор" },
+      { key: "back", value: "Назад" }
+    ])
+  );
 });
 
 searchBookScene.action("confirm", ctx => {
-  console.log("add book in useer library");
+  // TODO: add book to user library
 
   ctx.reply("Теперь книга находится у вас! Вы можете проверить список взятых книг командой /books list");
   return ctx.scene.leave();
