@@ -24,6 +24,14 @@ function startSceneHandler(bot) {
   bot.use(session());
   bot.use(stage.middleware());
 
+  bot.on("message", (ctx, next) => {
+    if (ctx.session.user && ctx.session.user.role === "Guest") {
+      ctx.reply("Аккаунт ожидает подтверждения")
+    } else {
+      next()
+    }
+  })
+
   bot.start(ctx => {
     const userData = ctx.from;
     User.findOne({ telegram_id: userData.id }).lean().exec((error, user) => {
