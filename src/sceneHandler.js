@@ -50,29 +50,29 @@ function startSceneHandler(bot) {
     ctx.reply("Выберите действие:", Extra.HTML().markup(m =>
       m.inlineKeyboard([
         [
-          m.callbackButton("Взять книгу", "/books take"),
-          m.callbackButton("Вернуть книгу", "/books return")
+          m.callbackButton("Взять книгу", "/take"),
+          m.callbackButton("Вернуть книгу", "/return")
         ], [
-          m.callbackButton("Доступные книги", "/books available"),
-          m.callbackButton("Недоступные книги", "/books unavailable")
+          m.callbackButton("Доступные книги", "/available"),
+          m.callbackButton("Недоступные книги", "/unavailable")
         ]
       ])
     ));
   });
 
-  bot.action("/books take", ctx => {
+  bot.action("/take", ctx => {
     ctx.scene.enter("searchBookScene");
   });
 
-  bot.action("/books return", ctx => {
+  bot.action("/return", ctx => {
     ctx.scene.enter("returnBookScene");
   });
 
-  bot.action("/books available", ctx => {
+  bot.action("/available", ctx => {
     ctx.scene.enter("availableBooksScene");
   });
 
-  bot.action("/books unavailable", ctx => {
+  bot.action("/unavailable", ctx => {
     ctx.scene.enter("unavailableBooksScene");
   });
 }
