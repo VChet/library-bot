@@ -8,22 +8,23 @@ const availableBooksScene = new Scene("availableBooksScene");
 
 availableBooksScene.enter(ctx => {
   ctx.scene.session.availableBooks = {
+    page: 1,
     results: {}
   };
 
   Book.find({ user: null }).lean().exec((error, books) => {
     if (error) console.log(error);
 
-    ctx.scene.session.availableBooks = books;
+    ctx.scene.session.availableBooks.results = books;
     ctx.reply(`В библиотеке ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}`,
-      booksKeyboard(books)
+      booksKeyboard(ctx, books)
     );
   });
 });
 
 availableBooksScene.action(/get.+/, (ctx) => {
   const selectedBook = ctx.match[0].split(" ")[1];
-  const filterBySelectedBook = ctx.scene.session.availableBooks.filter(book => book._id.toString() === selectedBook.toString());
+  const filterBySelectedBook = ctx.scene.session.availableBooks.results.filter(book => book._id.toString() === selectedBook.toString());
   ctx.scene.session.availableBooks.selected = filterBySelectedBook[0];
   return ctx.reply(
     `Выбранная книга: ${filterBySelectedBook[0].author} — ${filterBySelectedBook[0].name}.`,
@@ -48,9 +49,17 @@ availableBooksScene.action("take", ctx => {
   );
 });
 
-availableBooksScene.action("findAgain", ctx => {
-  ctx.scene.leave();
-  return ctx.scene.enter("availableBooksScene");
+availableBooksScene.action(/changePage (.+)/, ctx => {
+  ctx.match[1] === "next" ? ctx.scene.session.availableBooks.page++ : ctx.scene.session.availableBooks.page--
+
+  const books = ctx.scene.session.availableBooks.results
+  const currentPage = ctx.scene.session.availableBooks.page
+  const firstBooksBorder = 1 + (currentPage - 1) * 10
+  const secondBooksBorder = currentPage * 10 > books.length ? books.length : currentPage * 10
+ 
+  const newMessage = `В библиотеке ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])} (показаны с ${firstBooksBorder} по ${secondBooksBorder})`
+  
+  return ctx.editMessageText(newMessage, booksKeyboard(ctx, books))
 });
 
 function keyboard(items) {
@@ -63,14 +72,39 @@ function keyboard(items) {
   );
 }
 
-function booksKeyboard(books) {
-  return Extra.HTML().markup(m =>
-    m.inlineKeyboard(
-      books.map(book => [
-        m.callbackButton(`${book.author} — ${book.name}`, `get ${book._id}`)
+function booksKeyboard(ctx, books) {
+  const currentPage = ctx.scene.session.availableBooks.page
+
+  return Extra.HTML().markup(m => {
+    let keyboard = []
+
+    if (books.length <= 10) {
+      keyboard.push = books.map(book => [
+        m.callbackButton(`${book.author} — ${book.name} ${book.user ? '❌' : ''}`, `get ${book._id}`)
       ])
-    )
-  );
+    } else if (books.length > 10) {
+      keyboard.push(
+        ...books.slice((currentPage - 1) * 10, currentPage * 10).map(book => [
+          m.callbackButton(`${book.author} — ${book.name} ${book.user ? '❌' : ''}`, `get ${book._id}`)
+        ])
+      )
+    }
+
+    if (currentPage === 1) {
+      keyboard.push([m.callbackButton("Вперед", "changePage next")])
+    } else if (currentPage > 1 && currentPage * 10 < books.length) {
+      keyboard.push([
+        m.callbackButton("Назад", "changePage previous"),
+        m.callbackButton("Вперед", "changePage next")
+      ])
+    } else if (currentPage * 10 > books.length) {
+      keyboard.push([
+        m.callbackButton("Назад", "changePage previous")
+      ])
+    }
+
+    return m.inlineKeyboard(keyboard)
+  });
 }
 
 module.exports = {
