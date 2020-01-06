@@ -22,31 +22,27 @@ const stage = new Stage(scenes);
 // Models
 const { User } = require("../models/user");
 
-async function setSession(ctx) {
-  if (!ctx.session.user) {
-    const userData = ctx.from;
-    const user = await User.findOne({ telegram_id: userData.id }).lean();
-    if (user) {
-      ctx.session.user = user;
-    } else {
-      const newUser = new User({
-        telegram_id: userData.id,
-        first_name: userData.first_name,
-        last_name: userData.last_name,
-        username: userData.username
-      });
-      await newUser.save();
-      ctx.session.user = newUser;
-    }
-  }
-}
-
 function startSceneHandler(bot) {
   bot.use(session());
   bot.use(stage.middleware());
 
-  bot.on("message", async (ctx, next) => {
-    await setSession(ctx);
+  bot.on(["message", "callback_query"], async (ctx, next) => {
+    if (!ctx.session.user) {
+      const userData = ctx.from;
+      const user = await User.findOne({ telegram_id: userData.id }).lean();
+      if (user) {
+        ctx.session.user = user;
+      } else {
+        const newUser = new User({
+          telegram_id: userData.id,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          username: userData.username
+        });
+        await newUser.save();
+        ctx.session.user = newUser;
+      }
+    }
     if (ctx.session.user.role === "Guest") {
       ctx.reply("Аккаунт ожидает подтверждения");
     } else {
