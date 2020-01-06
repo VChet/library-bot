@@ -9,11 +9,13 @@ const { searchBookScene } = require("./scenes/searchBook");
 const { returnBookScene } = require("./scenes/returnBook");
 const { availableBooksScene } = require("./scenes/availableBooks");
 const { unavailableBooksScene } = require("./scenes/unavailableBooks");
+const { usersScene } = require("./scenes/users");
 const scenes = [
   searchBookScene,
   returnBookScene,
   availableBooksScene,
-  unavailableBooksScene
+  unavailableBooksScene,
+  usersScene
 ];
 const stage = new Stage(scenes);
 
@@ -84,5 +86,22 @@ function startSceneHandler(bot) {
 
   bot.action("/unavailable", ctx => {
     ctx.scene.enter("unavailableBooksScene");
+  });
+
+  bot.hears("/admin", ctx => {
+    if (ctx.session.user.role === "Admin") {
+      ctx.reply("Меню администратора", Extra.HTML().markup(m =>
+        m.inlineKeyboard([
+          m.callbackButton("Пользователи", "/users")
+        ], [
+          m.callbackButton("Добавить книгу", "/book add"),
+          m.callbackButton("Редактировать", "/book edit")
+        ])
+      ));
+    }
+  });
+
+  bot.action("/users", ctx => {
+    ctx.scene.enter("usersScene");
   });
 }
