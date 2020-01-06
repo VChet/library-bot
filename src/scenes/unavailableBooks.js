@@ -19,7 +19,7 @@ unavailableBooksScene.enter(ctx => {
       `Сейчас на руках ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}:\n${booksList}` :
       "Все книги в библиотеке!";
 
-    ctx.reply(response);
+    ctx.editMessageText(response);
     return ctx.scene.leave();
   });
 });

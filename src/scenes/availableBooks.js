@@ -16,7 +16,7 @@ availableBooksScene.enter(ctx => {
     if (error) console.log(error);
 
     ctx.scene.session.availableBooks.results = books;
-    ctx.reply(`В библиотеке ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}`,
+    ctx.editMessageText(`В библиотеке ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}`,
       booksKeyboard(ctx, books)
     );
   });
@@ -26,10 +26,11 @@ availableBooksScene.action(/get (.+)/, (ctx) => {
   const bookId = ctx.match[1];
   const bookData = ctx.scene.session.availableBooks.results.find(book => book._id.toString() === bookId.toString());
   ctx.scene.session.availableBooks.selected = bookData;
-  return ctx.reply(
+  return ctx.editMessageText(
     `Выбранная книга: ${bookData.author} — ${bookData.name}.`,
     keyboard([
       { key: "take", value: "Взять" },
+      // TODO: add action for 'findAgain'
       { key: "findAgain", value: "Назад к списку" }
     ])
   );
@@ -43,7 +44,7 @@ availableBooksScene.action("take", ctx => {
     (error, book) => {
       if (error) console.log(error);
 
-      ctx.reply("Теперь книга находится у вас! Вы можете проверить список взятых книг командой /books list");
+      ctx.editMessageText("Теперь книга закреплена за вами!");
       return ctx.scene.leave();
     }
   );

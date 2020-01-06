@@ -16,12 +16,12 @@ returnBookScene.enter(ctx => {
 
     if (books.length) {
       ctx.session.user.books = books;
-      ctx.reply(
+      ctx.editMessageText(
         `У вас ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}. Выберите книгу, которую хотите вернуть:`,
         booksKeyboard(books)
       );
     } else {
-      ctx.reply("У вас нет невозвращенных книг");
+      ctx.editMessageText("У вас нет невозвращенных книг");
       return ctx.scene.leave();
     }
   });
@@ -31,10 +31,11 @@ returnBookScene.action(/get (.+)/, (ctx) => {
   const bookId = ctx.match[1];
   const bookData = ctx.session.user.books.find(book => book._id.toString() === bookId.toString());
   ctx.scene.session.returnBook.selected = bookData;
-  return ctx.reply(
+  return ctx.editMessageText(
     `Вернуть ${bookData.author} — ${bookData.name}?`,
     keyboard([
       { key: "confirm", value: "Да" },
+      // TODO: add action for 'back'
       { key: "back", value: "Назад" }
     ])
   );
@@ -48,7 +49,7 @@ returnBookScene.action("confirm", ctx => {
     (error, book) => {
       if (error) console.log(error);
 
-      ctx.reply("Вы вернули книгу. Спасибо!");
+      ctx.editMessageText("Вы вернули книгу. Спасибо!");
       return ctx.scene.leave();
     }
   );

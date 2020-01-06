@@ -16,7 +16,7 @@ usersScene.enter(ctx => {
     if (error) console.log(error);
 
     ctx.scene.session.users.results = users;
-    ctx.reply(`В базе ${users.length} ${declOfNum(users.length, ["пользователь", "пользователя", "пользователей"])}`,
+    ctx.editMessageText(`В базе ${users.length} ${declOfNum(users.length, ["пользователь", "пользователя", "пользователей"])}`,
       listKeyboard(ctx, users)
     );
   });
@@ -26,19 +26,21 @@ usersScene.action(/get (.+)/, (ctx) => {
   const userId = ctx.match[1];
   const userData = ctx.scene.session.users.results.find(user => user._id.toString() === userId.toString());
   ctx.scene.session.users.selected = userData;
-  return ctx.reply(
+  return ctx.editMessageText(
     `${userData.first_name} ${userData.last_name} @${userData.username} (${userData.role})`,
     keyboard([
       { key: "promote", value: "Повысить" },
       { key: "demote", value: "Понизить" },
-      { key: "findAgain", value: "Назад к списку" }
+      // TODO: add action for 'back'
+      { key: "back", value: "Назад к списку" }
     ])
   );
 });
 
 usersScene.action("promote", ctx => {
   let newRole;
-  switch (ctx.scene.session.users.selected.role) {
+  const selectedUser = ctx.scene.session.users.selected;
+  switch (selectedUser.role) {
     case "Guest":
       newRole = "User";
       break;
@@ -49,17 +51,25 @@ usersScene.action("promote", ctx => {
       break;
   }
   if (!newRole) {
-    ctx.reply("Этот пользователь уже является администратором");
+    ctx.editMessageText(
+      `${selectedUser.first_name} ${selectedUser.last_name} уже является администратором`,
+      keyboard([
+        { key: "promote", value: "Повысить" },
+        { key: "demote", value: "Понизить" },
+        // TODO: add action for 'back'
+        { key: "back", value: "Назад к списку" }
+      ])
+    );
     return;
   }
   User.findByIdAndUpdate(
-    ctx.scene.session.users.selected._id,
+    selectedUser._id,
     { $set: { role: newRole } },
     { new: true },
     (error, user) => {
       if (error) console.log(error);
 
-      ctx.reply(`Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`);
+      ctx.editMessageText(`Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`);
       return ctx.scene.leave();
     }
   );
@@ -67,7 +77,8 @@ usersScene.action("promote", ctx => {
 
 usersScene.action("demote", ctx => {
   let newRole;
-  switch (ctx.scene.session.users.selected.role) {
+  const selectedUser = ctx.scene.session.users.selected;
+  switch (selectedUser.role) {
     case "Admin":
       newRole = "User";
       break;
@@ -78,17 +89,25 @@ usersScene.action("demote", ctx => {
       break;
   }
   if (!newRole) {
-    ctx.reply("Этот пользователь не является подтвержденным");
+    ctx.editMessageText(
+      `Пользователь ${selectedUser.first_name} ${selectedUser.last_name} не является подтвержденным`,
+      keyboard([
+        { key: "promote", value: "Повысить" },
+        { key: "demote", value: "Понизить" },
+        // TODO: add action for 'back'
+        { key: "back", value: "Назад к списку" }
+      ])
+    );
     return ctx.scene.leave();
   }
   User.findByIdAndUpdate(
-    ctx.scene.session.users.selected._id,
+    selectedUser._id,
     { $set: { role: newRole } },
     { new: true },
     (error, user) => {
       if (error) console.log(error);
 
-      ctx.reply(`Пользователь ${user.last_name} ${user.first_name} теперь ${user.role}`);
+      ctx.editMessageText(`Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`);
       return ctx.scene.leave();
     }
   );

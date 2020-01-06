@@ -8,7 +8,7 @@ const { User } = require("../../models/user");
 const searchBookScene = new Scene("searchBookScene");
 
 searchBookScene.enter(ctx => {
-  ctx.reply(
+  ctx.editMessageText(
     "Введите название книги и автора.",
     keyboard([
       { key: "cancel", value: "Отменить поиск" }
@@ -51,7 +51,7 @@ searchBookScene.on("message", ctx => {
 });
 
 searchBookScene.action("cancel", (ctx) => {
-  ctx.reply("Поиск отменен");
+  ctx.editMessageText("Поиск отменен");
   return ctx.scene.leave();
 });
 
@@ -63,16 +63,18 @@ searchBookScene.action(/get (.+)/, (ctx) => {
     User.findById(bookData.user).lean().exec((error, user) => {
       if (error) console.log(error);
 
-      return ctx.reply(
+      return ctx.editMessageText(
         `${bookData.name} сейчас у @${user.username}`,
+        // TODO: add action for 'back'
         keyboard([{ key: "back", value: "Назад" }])
       );
     });
   } else {
-    return ctx.reply(
+    return ctx.editMessageText(
       `Выбранная книга: ${bookData.author} — ${bookData.name}.`,
       keyboard([
         { key: "confirm", value: "Подтвердить выбор" },
+        // TODO: add action for 'back'
         { key: "back", value: "Назад" }
       ])
     );
@@ -87,7 +89,7 @@ searchBookScene.action("confirm", ctx => {
     (error, book) => {
       if (error) console.log(error);
 
-      ctx.reply("Теперь книга находится у вас! Вы можете проверить список взятых книг командой /books list");
+      ctx.editMessageText(`Теперь книга "${book.name}" закреплена за вами!`);
       return ctx.scene.leave();
     }
   );
