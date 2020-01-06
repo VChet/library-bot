@@ -20,38 +20,40 @@ const stage = new Stage(scenes);
 // Models
 const { User } = require("../models/user");
 
+async function setSession(ctx) {
+  if (!ctx.session.user) {
+    const userData = ctx.from;
+    const user = await User.findOne({ telegram_id: userData.id }).lean();
+    if (user) {
+      ctx.session.user = user;
+    } else {
+      const newUser = new User({
+        telegram_id: userData.id,
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        username: userData.username
+      });
+      await newUser.save();
+      ctx.session.user = newUser;
+    }
+  }
+}
+
 function startSceneHandler(bot) {
   bot.use(session());
   bot.use(stage.middleware());
 
-  bot.on("message", (ctx, next) => {
-    if (ctx.session.user && ctx.session.user.role === "Guest") {
-      ctx.reply("Аккаунт ожидает подтверждения")
+  bot.on("message", async (ctx, next) => {
+    await setSession(ctx);
+    if (ctx.session.user.role === "Guest") {
+      ctx.reply("Аккаунт ожидает подтверждения");
     } else {
-      next()
+      next();
     }
-  })
+  });
 
   bot.start(ctx => {
-    const userData = ctx.from;
-    User.findOne({ telegram_id: userData.id }).lean().exec((error, user) => {
-      if (error) console.log({ error });
-
-      if (user) {
-        ctx.session.user = user;
-        ctx.reply(`Снова привет, ${userData.username}`);
-      } else {
-        const newUser = new User({
-          telegram_id: userData.id,
-          first_name: userData.first_name,
-          last_name: userData.last_name,
-          username: userData.username
-        });
-        newUser.save();
-        ctx.session.user = newUser;
-        ctx.reply(`Привет, ${userData.username}`);
-      }
-    });
+    ctx.reply(`Снова привет, ${ctx.session.user.username}`);
   });
 
   bot.hears("/books", ctx => {
