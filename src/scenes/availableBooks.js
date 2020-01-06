@@ -50,16 +50,18 @@ availableBooksScene.action("take", ctx => {
 });
 
 availableBooksScene.action(/changePage (.+)/, ctx => {
-  ctx.match[1] === "next" ? ctx.scene.session.availableBooks.page++ : ctx.scene.session.availableBooks.page--
+  ctx.match[1] === "next" ?
+    ctx.scene.session.availableBooks.page++ :
+    ctx.scene.session.availableBooks.page--;
 
-  const books = ctx.scene.session.availableBooks.results
-  const currentPage = ctx.scene.session.availableBooks.page
-  const firstBooksBorder = 1 + (currentPage - 1) * 10
-  const secondBooksBorder = currentPage * 10 > books.length ? books.length : currentPage * 10
+  const books = ctx.scene.session.availableBooks.results;
+  const currentPage = ctx.scene.session.availableBooks.page;
+  const firstBooksBorder = 1 + (currentPage - 1) * 10;
+  const secondBooksBorder = currentPage * 10 > books.length ? books.length : currentPage * 10;
 
-  const newMessage = `В библиотеке ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])} (показаны с ${firstBooksBorder} по ${secondBooksBorder})`
+  const newMessage = `В библиотеке ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])} (показаны с ${firstBooksBorder} по ${secondBooksBorder})`;
 
-  return ctx.editMessageText(newMessage, booksKeyboard(ctx, books))
+  return ctx.editMessageText(newMessage, booksKeyboard(ctx, books));
 });
 
 function keyboard(items) {
@@ -73,37 +75,37 @@ function keyboard(items) {
 }
 
 function booksKeyboard(ctx, books) {
-  const currentPage = ctx.scene.session.availableBooks.page
+  const currentPage = ctx.scene.session.availableBooks.page;
 
   return Extra.HTML().markup(m => {
-    let keyboard = [];
+    const keyboard = [];
 
     if (books.length <= 10) {
       keyboard.push(...books.map(book => [
-        m.callbackButton(`${book.author} — ${book.name} ${book.user ? '❌' : ''}`, `get ${book._id}`)
-      ]))
+        m.callbackButton(`${book.author} — ${book.name} ${book.user ? "❌" : ""}`, `get ${book._id}`)
+      ]));
     } else if (books.length > 10) {
       keyboard.push(
         ...books.slice((currentPage - 1) * 10, currentPage * 10).map(book => [
-          m.callbackButton(`${book.author} — ${book.name} ${book.user ? '❌' : ''}`, `get ${book._id}`)
+          m.callbackButton(`${book.author} — ${book.name} ${book.user ? "❌" : ""}`, `get ${book._id}`)
         ])
-      )
+      );
 
       if (currentPage === 1) {
-        keyboard.push([m.callbackButton("Вперед", "changePage next")])
+        keyboard.push([m.callbackButton("Вперед", "changePage next")]);
       } else if (currentPage > 1 && currentPage * 10 < books.length) {
         keyboard.push([
           m.callbackButton("Назад", "changePage previous"),
           m.callbackButton("Вперед", "changePage next")
-        ])
+        ]);
       } else if (currentPage * 10 > books.length) {
         keyboard.push([
           m.callbackButton("Назад", "changePage previous")
-        ])
+        ]);
       }
     }
 
-    return m.inlineKeyboard(keyboard)
+    return m.inlineKeyboard(keyboard);
   });
 }
 

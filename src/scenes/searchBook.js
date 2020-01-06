@@ -112,7 +112,7 @@ function booksKeyboard(books) {
   return Extra.HTML().markup(m =>
     m.inlineKeyboard(
       books.map(book => [
-        m.callbackButton(`${book.author} — ${book.name} ${book.user ? '❌' : ''}`, `get ${book._id}`)
+        m.callbackButton(`${book.author} — ${book.name} ${book.user ? "❌" : ""}`, `get ${book._id}`)
       ])
     )
   );
