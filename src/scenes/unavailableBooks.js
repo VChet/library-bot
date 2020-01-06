@@ -15,7 +15,11 @@ unavailableBooksScene.enter(ctx => {
 
     ctx.scene.session.unavailableBooks = books;
     const booksList = books.map(book => `${book.author} — ${book.name} (@${book.user.username})`).join("\n");
-    ctx.reply(`Сейчас на руках ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}:\n${booksList}`);
+    const response = books.length ?
+      `Сейчас на руках ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}:\n${booksList}` :
+      "Все книги в библиотеке!";
+
+    ctx.reply(response);
     return ctx.scene.leave();
   });
 });

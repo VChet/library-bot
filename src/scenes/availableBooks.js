@@ -22,12 +22,12 @@ availableBooksScene.enter(ctx => {
   });
 });
 
-availableBooksScene.action(/get.+/, (ctx) => {
-  const selectedBook = ctx.match[0].split(" ")[1];
-  const filterBySelectedBook = ctx.scene.session.availableBooks.results.filter(book => book._id.toString() === selectedBook.toString());
-  ctx.scene.session.availableBooks.selected = filterBySelectedBook[0];
+availableBooksScene.action(/get (.+)/, (ctx) => {
+  const bookId = ctx.match[1];
+  const bookData = ctx.scene.session.availableBooks.results.find(book => book._id.toString() === bookId.toString());
+  ctx.scene.session.availableBooks.selected = bookData;
   return ctx.reply(
-    `Выбранная книга: ${filterBySelectedBook[0].author} — ${filterBySelectedBook[0].name}.`,
+    `Выбранная книга: ${bookData.author} — ${bookData.name}.`,
     keyboard([
       { key: "take", value: "Взять" },
       { key: "findAgain", value: "Назад к списку" }
@@ -56,9 +56,9 @@ availableBooksScene.action(/changePage (.+)/, ctx => {
   const currentPage = ctx.scene.session.availableBooks.page
   const firstBooksBorder = 1 + (currentPage - 1) * 10
   const secondBooksBorder = currentPage * 10 > books.length ? books.length : currentPage * 10
- 
+
   const newMessage = `В библиотеке ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])} (показаны с ${firstBooksBorder} по ${secondBooksBorder})`
-  
+
   return ctx.editMessageText(newMessage, booksKeyboard(ctx, books))
 });
 
@@ -76,7 +76,7 @@ function booksKeyboard(ctx, books) {
   const currentPage = ctx.scene.session.availableBooks.page
 
   return Extra.HTML().markup(m => {
-    let keyboard = []
+    let keyboard = [];
 
     if (books.length <= 10) {
       keyboard.push(...books.map(book => [
