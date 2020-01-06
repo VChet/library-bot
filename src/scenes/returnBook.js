@@ -27,12 +27,12 @@ returnBookScene.enter(ctx => {
   });
 });
 
-returnBookScene.action(/get.+/, (ctx) => {
-  const selectedBook = ctx.match[0].split(" ")[1];
-  const filterBySelectedBook = ctx.session.user.books.filter(book => book._id.toString() === selectedBook.toString());
-  ctx.scene.session.returnBook.selected = filterBySelectedBook[0];
+returnBookScene.action(/get (.+)/, (ctx) => {
+  const bookId = ctx.match[1];
+  const bookData = ctx.session.user.books.find(book => book._id.toString() === bookId.toString());
+  ctx.scene.session.returnBook.selected = bookData;
   return ctx.reply(
-    `Вернуть ${filterBySelectedBook[0].author} — ${filterBySelectedBook[0].name}?`,
+    `Вернуть ${bookData.author} — ${bookData.name}?`,
     keyboard([
       { key: "confirm", value: "Да" },
       { key: "back", value: "Назад" }
