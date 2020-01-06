@@ -58,11 +58,11 @@ function startSceneHandler(bot) {
     ctx.reply(`Снова привет, ${ctx.session.user.username}`);
   });
 
-  bot.hears("/books", ctx => {
+  bot.hears("/menu", ctx => {
     ctx.reply("Выберите действие:", Extra.HTML().markup(m =>
       m.inlineKeyboard([
         [
-          m.callbackButton("Взять книгу", "/take"),
+          m.callbackButton("Поиск", "/search"),
           m.callbackButton("Вернуть книгу", "/return")
         ], [
           m.callbackButton("Доступные книги", "/available"),
@@ -72,7 +72,7 @@ function startSceneHandler(bot) {
     ));
   });
 
-  bot.action("/take", ctx => {
+  bot.action("/search", ctx => {
     ctx.scene.enter("searchBookScene");
   });
 
