@@ -10,7 +10,7 @@ unavailableBooksScene.enter(ctx => {
     results: {}
   };
 
-  Book.find({ user: { $ne: null } }).populate("user").lean().exec((error, books) => {
+  Book.find({ user: { $ne: null }, is_archived: false }).populate("user").lean().exec((error, books) => {
     if (error) console.log(error);
 
     ctx.scene.session.unavailableBooks = books;

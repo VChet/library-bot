@@ -12,7 +12,7 @@ availableBooksScene.enter(ctx => {
     results: {}
   };
 
-  Book.find({ user: null }).lean().exec((error, books) => {
+  Book.find({ user: null, is_archived: false }).lean().exec((error, books) => {
     if (error) console.log(error);
 
     ctx.scene.session.availableBooks.results = books;

@@ -25,7 +25,7 @@ searchBookScene.on("message", ctx => {
 
   ctx.scene.session.searchBook.query = ctx.message.text;
 
-  Book.find({ $text: { $search: ctx.message.text } }).lean().exec((error, books) => {
+  Book.find({ $text: { $search: ctx.message.text }, is_archived: false }).lean().exec((error, books) => {
     if (error) return console.log(error);
     if (books.length) {
       if (books.length > 100) {
