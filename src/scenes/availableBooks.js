@@ -79,28 +79,28 @@ function booksKeyboard(ctx, books) {
     let keyboard = []
 
     if (books.length <= 10) {
-      keyboard.push = books.map(book => [
+      keyboard.push(...books.map(book => [
         m.callbackButton(`${book.author} — ${book.name} ${book.user ? '❌' : ''}`, `get ${book._id}`)
-      ])
+      ]))
     } else if (books.length > 10) {
       keyboard.push(
         ...books.slice((currentPage - 1) * 10, currentPage * 10).map(book => [
           m.callbackButton(`${book.author} — ${book.name} ${book.user ? '❌' : ''}`, `get ${book._id}`)
         ])
       )
-    }
 
-    if (currentPage === 1) {
-      keyboard.push([m.callbackButton("Вперед", "changePage next")])
-    } else if (currentPage > 1 && currentPage * 10 < books.length) {
-      keyboard.push([
-        m.callbackButton("Назад", "changePage previous"),
-        m.callbackButton("Вперед", "changePage next")
-      ])
-    } else if (currentPage * 10 > books.length) {
-      keyboard.push([
-        m.callbackButton("Назад", "changePage previous")
-      ])
+      if (currentPage === 1) {
+        keyboard.push([m.callbackButton("Вперед", "changePage next")])
+      } else if (currentPage > 1 && currentPage * 10 < books.length) {
+        keyboard.push([
+          m.callbackButton("Назад", "changePage previous"),
+          m.callbackButton("Вперед", "changePage next")
+        ])
+      } else if (currentPage * 10 > books.length) {
+        keyboard.push([
+          m.callbackButton("Назад", "changePage previous")
+        ])
+      }
     }
 
     return m.inlineKeyboard(keyboard)
