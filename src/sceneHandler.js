@@ -22,6 +22,11 @@ const stage = new Stage(scenes);
 // Models
 const { User } = require("../models/user");
 
+function isAdmin(ctx, next) {
+  if (ctx.session.user.role === "Admin") return next();
+  ctx.reply("Вам недоступна эта команда");
+}
+
 function startSceneHandler(bot) {
   bot.use(session());
   bot.use(stage.middleware());
@@ -84,20 +89,18 @@ function startSceneHandler(bot) {
     ctx.scene.enter("unavailableBooksScene");
   });
 
-  bot.hears("/admin", ctx => {
-    if (ctx.session.user.role === "Admin") {
-      ctx.reply("Меню администратора", Extra.HTML().markup(m =>
-        m.inlineKeyboard([
-          m.callbackButton("Пользователи", "/users")
-        ], [
-          m.callbackButton("Добавить книгу", "/book add"),
-          m.callbackButton("Редактировать", "/book edit")
-        ])
-      ));
-    }
+  bot.hears("/admin", isAdmin, ctx => {
+    ctx.reply("Меню администратора", Extra.HTML().markup(m =>
+      m.inlineKeyboard([
+        m.callbackButton("Пользователи", "/users")
+      ], [
+        m.callbackButton("Добавить книгу", "/book add"),
+        m.callbackButton("Редактировать", "/book edit")
+      ])
+    ));
   });
 
-  bot.action("/users", ctx => {
+  bot.action("/users", isAdmin, ctx => {
     ctx.scene.enter("usersScene");
   });
 }
