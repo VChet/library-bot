@@ -1,4 +1,5 @@
 const Scene = require("telegraf/scenes/base");
+const { Extra } = require("telegraf");
 
 const { declOfNum } = require("../helpers");
 const { Book } = require("../../models/book");
@@ -19,9 +20,18 @@ unavailableBooksScene.enter(ctx => {
       `Сейчас на руках ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}:\n${booksList}` :
       "Все книги в библиотеке!";
 
-    ctx.editMessageText(response);
-    return ctx.scene.leave();
+    ctx.editMessageText(
+      response,
+      Extra.HTML().markup(m => {
+        return m.inlineKeyboard([m.callbackButton("В меню", "menu")]);
+      })
+    );
   });
+});
+
+unavailableBooksScene.action("menu", ctx => {
+  ctx.scene.leave();
+  return ctx.scene.enter("menuScene");
 });
 
 module.exports = {

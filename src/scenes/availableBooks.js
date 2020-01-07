@@ -16,9 +16,18 @@ availableBooksScene.enter(ctx => {
     if (error) console.log(error);
 
     ctx.scene.session.availableBooks.results = books;
-    ctx.editMessageText(`В библиотеке ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}`,
-      booksKeyboard(ctx, books)
-    );
+    if (books.length) {
+      ctx.editMessageText(`В библиотеке ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}`,
+        booksKeyboard(ctx, books)
+      );
+    } else {
+      ctx.editMessageText(
+        "В библиотеке не осталось книг",
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([m.callbackButton("В меню", "menu")])
+        )
+      );
+    }
   });
 });
 
@@ -28,11 +37,12 @@ availableBooksScene.action(/get (.+)/, (ctx) => {
   ctx.scene.session.availableBooks.selected = bookData;
   return ctx.editMessageText(
     `Выбранная книга: ${bookData.author} — ${bookData.name}.`,
-    keyboard([
-      { key: "take", value: "Взять" },
-      // TODO: add action for 'findAgain'
-      { key: "findAgain", value: "Назад к списку" }
-    ])
+    Extra.HTML().markup(m =>
+      m.inlineKeyboard([
+        m.callbackButton("take", "Взять"),
+        m.callbackButton("back", "Назад к списку")
+      ])
+    )
   );
 });
 
@@ -44,10 +54,26 @@ availableBooksScene.action("take", ctx => {
     (error, book) => {
       if (error) console.log(error);
 
-      ctx.editMessageText("Теперь книга закреплена за вами!");
-      return ctx.scene.leave();
+      ctx.editMessageText(
+        "Теперь книга закреплена за вами!",
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([
+            m.callbackButton("back", "Назад к списку"),
+            m.callbackButton("menu", "В меню")
+          ])
+        )
+      );
     }
   );
+});
+
+availableBooksScene.action("back", ctx => {
+  ctx.scene.reenter();
+});
+
+availableBooksScene.action("menu", ctx => {
+  ctx.scene.leave();
+  return ctx.scene.enter("menuScene");
 });
 
 availableBooksScene.action(/changePage (.+)/, ctx => {
@@ -64,16 +90,6 @@ availableBooksScene.action(/changePage (.+)/, ctx => {
 
   return ctx.editMessageText(newMessage, booksKeyboard(ctx, books));
 });
-
-function keyboard(items) {
-  return Extra.HTML().markup(m =>
-    m.inlineKeyboard(
-      items.map(item => [
-        m.callbackButton(item.value, item.key)
-      ])
-    )
-  );
-}
 
 function booksKeyboard(ctx, books) {
   const currentPage = ctx.scene.session.availableBooks.page;

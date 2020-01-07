@@ -21,8 +21,12 @@ returnBookScene.enter(ctx => {
         booksKeyboard(books)
       );
     } else {
-      ctx.editMessageText("У вас нет невозвращенных книг");
-      return ctx.scene.leave();
+      ctx.editMessageText(
+        "У вас нет невозвращенных книг",
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([m.callbackButton("В меню", "menu")])
+        )
+      );
     }
   });
 });
@@ -33,11 +37,16 @@ returnBookScene.action(/get (.+)/, (ctx) => {
   ctx.scene.session.returnBook.selected = bookData;
   return ctx.editMessageText(
     `Вернуть ${bookData.author} — ${bookData.name}?`,
-    keyboard([
-      { key: "confirm", value: "Да" },
-      // TODO: add action for 'back'
-      { key: "back", value: "Назад" }
-    ])
+    Extra.HTML().markup(m =>
+      m.inlineKeyboard([
+        [
+          m.callbackButton("Вернуть", "confirm")
+        ], [
+          m.callbackButton("Назад к списку", "back"),
+          m.callbackButton("В меню", "menu")
+        ]
+      ])
+    )
   );
 });
 
@@ -49,21 +58,27 @@ returnBookScene.action("confirm", ctx => {
     (error, book) => {
       if (error) console.log(error);
 
-      ctx.editMessageText("Вы вернули книгу. Спасибо!");
-      return ctx.scene.leave();
+      ctx.editMessageText(
+        "Вы вернули книгу. Спасибо!",
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([
+            m.callbackButton("Назад к списку", "back"),
+            m.callbackButton("В меню", "menu")
+          ])
+        )
+      );
     }
   );
 });
 
-function keyboard(items) {
-  return Extra.HTML().markup(m =>
-    m.inlineKeyboard(
-      items.map(item => [
-        m.callbackButton(item.value, item.key)
-      ])
-    )
-  );
-}
+returnBookScene.action("back", ctx => {
+  ctx.scene.reenter();
+});
+
+returnBookScene.action("menu", ctx => {
+  ctx.scene.leave();
+  return ctx.scene.enter("menuScene");
+});
 
 function booksKeyboard(books) {
   return Extra.HTML().markup(m =>

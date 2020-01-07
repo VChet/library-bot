@@ -28,12 +28,7 @@ usersScene.action(/get (.+)/, (ctx) => {
   ctx.scene.session.users.selected = userData;
   return ctx.editMessageText(
     `${userData.first_name} ${userData.last_name} @${userData.username} (${userData.role})`,
-    keyboard([
-      { key: "promote", value: "Повысить" },
-      { key: "demote", value: "Понизить" },
-      // TODO: add action for 'back'
-      { key: "back", value: "Назад к списку" }
-    ])
+    menuKeyboard()
   );
 });
 
@@ -53,12 +48,7 @@ usersScene.action("promote", ctx => {
   if (!newRole) {
     ctx.editMessageText(
       `${selectedUser.first_name} ${selectedUser.last_name} уже является администратором`,
-      keyboard([
-        { key: "promote", value: "Повысить" },
-        { key: "demote", value: "Понизить" },
-        // TODO: add action for 'back'
-        { key: "back", value: "Назад к списку" }
-      ])
+      menuKeyboard()
     );
     return;
   }
@@ -69,8 +59,10 @@ usersScene.action("promote", ctx => {
     (error, user) => {
       if (error) console.log(error);
 
-      ctx.editMessageText(`Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`);
-      return ctx.scene.leave();
+      ctx.editMessageText(
+        `Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`,
+        menuKeyboard()
+      );
     }
   );
 });
@@ -91,14 +83,8 @@ usersScene.action("demote", ctx => {
   if (!newRole) {
     ctx.editMessageText(
       `Пользователь ${selectedUser.first_name} ${selectedUser.last_name} не является подтвержденным`,
-      keyboard([
-        { key: "promote", value: "Повысить" },
-        { key: "demote", value: "Понизить" },
-        // TODO: add action for 'back'
-        { key: "back", value: "Назад к списку" }
-      ])
+      menuKeyboard()
     );
-    return ctx.scene.leave();
   }
   User.findByIdAndUpdate(
     selectedUser._id,
@@ -107,10 +93,21 @@ usersScene.action("demote", ctx => {
     (error, user) => {
       if (error) console.log(error);
 
-      ctx.editMessageText(`Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`);
-      return ctx.scene.leave();
+      ctx.editMessageText(
+        `Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`,
+        menuKeyboard()
+      );
     }
   );
+});
+
+usersScene.action("back", ctx => {
+  ctx.scene.reenter();
+});
+
+usersScene.action("menu", ctx => {
+  ctx.scene.leave();
+  return ctx.scene.enter("menuScene");
 });
 
 usersScene.action(/changePage (.+)/, ctx => {
@@ -126,13 +123,17 @@ usersScene.action(/changePage (.+)/, ctx => {
   return ctx.editMessageText(newMessage, listKeyboard(ctx, users));
 });
 
-function keyboard(items) {
+function menuKeyboard() {
   return Extra.HTML().markup(m =>
-    m.inlineKeyboard(
-      items.map(item => [
-        m.callbackButton(item.value, item.key)
-      ])
-    )
+    m.inlineKeyboard([
+      [
+        m.callbackButton("Повысить", "promote"),
+        m.callbackButton("Понизить", "demote")
+      ], [
+        m.callbackButton("Назад к списку", "back"),
+        m.callbackButton("В меню", "menu")
+      ]
+    ])
   );
 }
 

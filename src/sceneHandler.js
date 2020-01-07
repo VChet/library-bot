@@ -5,12 +5,14 @@ const session = require("telegraf/session");
 const Stage = require("telegraf/stage");
 
 // Scenes
+const { menuScene } = require("./scenes/menu");
 const { searchBookScene } = require("./scenes/searchBook");
 const { returnBookScene } = require("./scenes/returnBook");
 const { availableBooksScene } = require("./scenes/availableBooks");
 const { unavailableBooksScene } = require("./scenes/unavailableBooks");
 const { usersScene } = require("./scenes/users");
 const scenes = [
+  menuScene,
   searchBookScene,
   returnBookScene,
   availableBooksScene,
@@ -21,11 +23,6 @@ const stage = new Stage(scenes);
 
 // Models
 const { User } = require("../models/user");
-
-function isAdmin(ctx, next) {
-  if (ctx.session.user.role === "Admin") return next();
-  ctx.reply("Вам недоступна эта команда");
-}
 
 function startSceneHandler(bot) {
   bot.use(session());
@@ -59,50 +56,12 @@ function startSceneHandler(bot) {
     ctx.reply(
       `Снова привет, ${ctx.session.user.username}`,
       Extra.HTML().markup(m => {
-        return m.inlineKeyboard([m.callbackButton("Меню", "/menu")]).resize();
+        return m.inlineKeyboard([m.callbackButton("Меню", "/menu")]);
       })
     );
   });
 
   bot.action("/menu", ctx => {
-    const hide = ctx.session.user.role !== "Admin";
-    ctx.editMessageText(
-      "Выберите действие:",
-      Extra.HTML().markup(m => {
-        const buttons = [
-          [
-            m.callbackButton("Поиск", "/search"),
-            m.callbackButton("Вернуть книгу", "/return")
-          ], [
-            m.callbackButton("Доступные книги", "/available"),
-            m.callbackButton("Недоступные книги", "/unavailable")
-          ],
-          [
-            m.callbackButton("⚠️ Пользователи", "/users", hide)
-          ]
-        ];
-        return m.inlineKeyboard(buttons);
-      })
-    );
-  });
-
-  bot.action("/search", ctx => {
-    ctx.scene.enter("searchBookScene");
-  });
-
-  bot.action("/return", ctx => {
-    ctx.scene.enter("returnBookScene");
-  });
-
-  bot.action("/available", ctx => {
-    ctx.scene.enter("availableBooksScene");
-  });
-
-  bot.action("/unavailable", ctx => {
-    ctx.scene.enter("unavailableBooksScene");
-  });
-
-  bot.action("/users", isAdmin, ctx => {
-    ctx.scene.enter("usersScene");
+    ctx.scene.enter("menuScene");
   });
 }

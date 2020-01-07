@@ -10,9 +10,9 @@ const searchBookScene = new Scene("searchBookScene");
 searchBookScene.enter(ctx => {
   ctx.editMessageText(
     "Введите название книги и автора.",
-    keyboard([
-      { key: "cancel", value: "Отменить поиск" }
-    ])
+    Extra.HTML().markup(m =>
+      m.inlineKeyboard([m.callbackButton("Отменить поиск", "menu")])
+    )
   );
 });
 
@@ -41,18 +41,15 @@ searchBookScene.on("message", ctx => {
     } else {
       ctx.reply(
         "Ничего не найдено",
-        keyboard([
-          { key: "findAgain", value: "Искать ещё" },
-          { key: "cancel", value: "Отмена" }
-        ])
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([
+            m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("В меню", "menu")
+          ])
+        )
       );
     }
   });
-});
-
-searchBookScene.action("cancel", (ctx) => {
-  ctx.editMessageText("Поиск отменен");
-  return ctx.scene.leave();
 });
 
 searchBookScene.action(/get (.+)/, (ctx) => {
@@ -65,18 +62,28 @@ searchBookScene.action(/get (.+)/, (ctx) => {
 
       return ctx.editMessageText(
         `${bookData.name} сейчас у @${user.username}`,
-        // TODO: add action for 'back'
-        keyboard([{ key: "back", value: "Назад" }])
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([
+            m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("В меню", "menu")
+          ])
+        )
       );
     });
   } else {
     return ctx.editMessageText(
       `Выбранная книга: ${bookData.author} — ${bookData.name}.`,
-      keyboard([
-        { key: "confirm", value: "Подтвердить выбор" },
-        // TODO: add action for 'back'
-        { key: "back", value: "Назад" }
-      ])
+      Extra.HTML().markup(m =>
+        m.inlineKeyboard([
+          [
+            m.callbackButton("Забрать книгу", "confirm")
+            // TODO: add 'edit book' button and action
+          ], [
+            m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("В меню", "menu")
+          ]
+        ])
+      )
     );
   }
 });
@@ -89,26 +96,27 @@ searchBookScene.action("confirm", ctx => {
     (error, book) => {
       if (error) console.log(error);
 
-      ctx.editMessageText(`Теперь книга "${book.name}" закреплена за вами!`);
-      return ctx.scene.leave();
+      ctx.editMessageText(
+        `Теперь книга "${book.name}" закреплена за вами!`,
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([
+            m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("В меню", "menu")
+          ])
+        )
+      );
     }
   );
 });
 
 searchBookScene.action("findAgain", ctx => {
-  ctx.scene.leave();
-  return ctx.scene.enter("searchBookScene");
+  ctx.scene.reenter();
 });
 
-function keyboard(items) {
-  return Extra.HTML().markup(m =>
-    m.inlineKeyboard(
-      items.map(item => [
-        m.callbackButton(item.value, item.key)
-      ])
-    )
-  );
-}
+searchBookScene.action("menu", ctx => {
+  ctx.scene.leave();
+  return ctx.scene.enter("menuScene");
+});
 
 function booksKeyboard(books) {
   return Extra.HTML().markup(m =>
