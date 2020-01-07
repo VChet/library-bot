@@ -9,7 +9,7 @@ const searchBookScene = new Scene("searchBookScene");
 
 searchBookScene.enter(ctx => {
   ctx.editMessageText(
-    "Введите название книги и автора.",
+    "Введите название книги или автора",
     Extra.HTML().markup(m =>
       m.inlineKeyboard([m.callbackButton("Отменить поиск", "menu")])
     )
@@ -71,12 +71,14 @@ searchBookScene.action(/get (.+)/, (ctx) => {
       );
     });
   } else {
+    const hide = ctx.session.user.role !== "Admin";
     return ctx.editMessageText(
       `Выбранная книга: ${bookData.author} — ${bookData.name}.`,
       Extra.HTML().markup(m =>
         m.inlineKeyboard([
           [
-            m.callbackButton("Забрать книгу", "confirm")
+            m.callbackButton("Взять книгу", "take"),
+            m.callbackButton("⚠️ В архив", "archiveCheck", hide)
             // TODO: add 'edit book' button and action
           ], [
             m.callbackButton("Искать ещё", "findAgain"),
@@ -88,7 +90,7 @@ searchBookScene.action(/get (.+)/, (ctx) => {
   }
 });
 
-searchBookScene.action("confirm", ctx => {
+searchBookScene.action("take", ctx => {
   Book.findByIdAndUpdate(
     ctx.scene.session.searchBook.selected._id,
     { $set: { user: ctx.session.user._id } },
@@ -101,6 +103,42 @@ searchBookScene.action("confirm", ctx => {
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
             m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("В меню", "menu")
+          ])
+        )
+      );
+    }
+  );
+});
+
+searchBookScene.action("archiveCheck", ctx => {
+  ctx.editMessageText(
+    `Архивировать "${ctx.scene.session.searchBook.selected.name}"? Книга будет недоступна и перестанет отображаться в поиске. Внимание, это действие необратимо!`,
+    Extra.HTML().markup(m =>
+      m.inlineKeyboard([
+        [m.callbackButton("Понятно, в архив!", "archive")],
+        [
+          m.callbackButton("Вернуться в поиск", "findAgain"),
+          m.callbackButton("В меню", "menu")
+        ]
+      ])
+    )
+  );
+});
+
+searchBookScene.action("archive", ctx => {
+  Book.findByIdAndUpdate(
+    ctx.scene.session.searchBook.selected._id,
+    { $set: { is_archived: true } },
+    { new: true },
+    (error, book) => {
+      if (error) console.log(error);
+
+      ctx.editMessageText(
+        `Книга "${book.name}" архивирована`,
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([
+            m.callbackButton("Вернуться в поиск", "findAgain"),
             m.callbackButton("В меню", "menu")
           ])
         )
