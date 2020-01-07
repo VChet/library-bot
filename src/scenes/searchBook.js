@@ -7,6 +7,8 @@ const { User } = require("../../models/user");
 
 const searchBookScene = new Scene("searchBookScene");
 
+const hideButton = (ctx) => ctx.session.user.role !== "Admin";
+
 searchBookScene.enter(ctx => {
   ctx.editMessageText(
     "Введите название книги или автора",
@@ -57,6 +59,22 @@ searchBookScene.action(/get (.+)/, (ctx) => {
   const bookData = ctx.scene.session.searchBook.results.find(book => book._id.toString() === bookId.toString());
   ctx.scene.session.searchBook.selected = bookData;
   if (bookData.user) {
+    if (bookData.user.toString() === ctx.session.user._id.toString()) {
+      return ctx.editMessageText(
+        `Вернуть "${bookData.author} — ${bookData.name}"?`,
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([
+            m.callbackButton("Вернуть книгу", "return"),
+            m.callbackButton("⚠️ В архив", "archiveCheck", hideButton(ctx))
+            // TODO: add 'edit book' button and action
+          ], [
+            m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("В меню", "menu")
+          ])
+        )
+      );
+    }
+
     User.findById(bookData.user).lean().exec((error, user) => {
       if (error) console.log(error);
 
@@ -71,14 +89,13 @@ searchBookScene.action(/get (.+)/, (ctx) => {
       );
     });
   } else {
-    const hide = ctx.session.user.role !== "Admin";
     return ctx.editMessageText(
       `Выбранная книга: ${bookData.author} — ${bookData.name}.`,
       Extra.HTML().markup(m =>
         m.inlineKeyboard([
           [
             m.callbackButton("Взять книгу", "take"),
-            m.callbackButton("⚠️ В архив", "archiveCheck", hide)
+            m.callbackButton("⚠️ В архив", "archiveCheck", hideButton(ctx))
             // TODO: add 'edit book' button and action
           ], [
             m.callbackButton("Искать ещё", "findAgain"),
@@ -88,6 +105,27 @@ searchBookScene.action(/get (.+)/, (ctx) => {
       )
     );
   }
+});
+
+searchBookScene.action("return", ctx => {
+  Book.findByIdAndUpdate(
+    ctx.scene.session.searchBook.selected._id,
+    { $set: { user: null } },
+    { new: true },
+    (error, book) => {
+      if (error) console.log(error);
+
+      ctx.editMessageText(
+        `Вы вернули книгу "${book.author} — ${book.name}". Спасибо!`,
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([
+            m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("В меню", "menu")
+          ])
+        )
+      );
+    }
+  );
 });
 
 searchBookScene.action("take", ctx => {

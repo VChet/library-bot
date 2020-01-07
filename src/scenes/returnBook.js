@@ -36,11 +36,11 @@ returnBookScene.action(/get (.+)/, (ctx) => {
   const bookData = ctx.session.user.books.find(book => book._id.toString() === bookId.toString());
   ctx.scene.session.returnBook.selected = bookData;
   return ctx.editMessageText(
-    `Вернуть ${bookData.author} — ${bookData.name}?`,
+    `Вернуть "${bookData.author} — ${bookData.name}"?`,
     Extra.HTML().markup(m =>
       m.inlineKeyboard([
         [
-          m.callbackButton("Вернуть", "confirm")
+          m.callbackButton("Вернуть", "return")
         ], [
           m.callbackButton("Назад к списку", "back"),
           m.callbackButton("В меню", "menu")
@@ -50,7 +50,7 @@ returnBookScene.action(/get (.+)/, (ctx) => {
   );
 });
 
-returnBookScene.action("confirm", ctx => {
+returnBookScene.action("return", ctx => {
   Book.findByIdAndUpdate(
     ctx.scene.session.returnBook.selected._id,
     { $set: { user: null } },
@@ -59,7 +59,7 @@ returnBookScene.action("confirm", ctx => {
       if (error) console.log(error);
 
       ctx.editMessageText(
-        "Вы вернули книгу. Спасибо!",
+        `Вы вернули книгу "${book.author} — ${book.name}". Спасибо!`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
             m.callbackButton("Назад к списку", "back"),
