@@ -1,23 +1,26 @@
 {
   "name": "library_bot",
   "version": "0.0.0",
-  "description": "",
+  "description": "Telegram bot for library management",
+  "author": "VChet",
+  "contributors": [
+    "Hyuugo"
+  ],
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VChet/library_bot.git"
+  },
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js"
   },
-  "author": "VChet",
-  "license": "ISC",
   "dependencies": {
     "mongoose": "^5.8.3",
-    "request": "^2.88.0",
     "socks5-https-client": "^1.2.1",
-    "telegraf": "^3.34.1"
+    "telegraf": "^3.35.0"
   },
   "devDependencies": {
-    "eslint-config-prettier": "^6.9.0",
-    "eslint-plugin-prettier": "^3.1.2",
-    "nodemon": "^2.0.2",
-    "prettier": "^1.19.1"
+    "nodemon": "^2.0.2"
   }
 }
