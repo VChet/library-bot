@@ -1,6 +1,5 @@
 module.exports = { startSceneHandler };
 
-const { Extra } = require("telegraf");
 const session = require("telegraf/session");
 const Stage = require("telegraf/stage");
 
@@ -48,20 +47,11 @@ function startSceneHandler(bot) {
     if (ctx.session.user.role === "Guest") {
       ctx.reply("Аккаунт ожидает подтверждения");
     } else {
-      next();
+      ctx.scene.enter("menuScene");
     }
   });
 
   bot.start(ctx => {
-    ctx.reply(
-      `Снова привет, ${ctx.session.user.username}`,
-      Extra.HTML().markup(m => {
-        return m.inlineKeyboard([m.callbackButton("Меню", "/menu")]);
-      })
-    );
-  });
-
-  bot.action("/menu", ctx => {
     ctx.scene.enter("menuScene");
   });
 }

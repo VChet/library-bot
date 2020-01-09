@@ -10,7 +10,8 @@ function isAdmin(ctx, next) {
 
 menuScene.enter(ctx => {
   const hide = ctx.session.user.role !== "Admin";
-  ctx.editMessageText(
+  ctx.deleteMessage();
+  ctx.reply(
     "Выберите действие:",
     Extra.HTML().markup(m => {
       const buttons = [
