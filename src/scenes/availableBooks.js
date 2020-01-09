@@ -39,8 +39,8 @@ availableBooksScene.action(/get (.+)/, (ctx) => {
     `Выбранная книга: ${bookData.author} — ${bookData.name}.`,
     Extra.HTML().markup(m =>
       m.inlineKeyboard([
-        m.callbackButton("take", "Взять"),
-        m.callbackButton("back", "Назад к списку")
+        m.callbackButton("Взять", "take"),
+        m.callbackButton("Назад к списку", "back")
       ])
     )
   );
@@ -58,8 +58,8 @@ availableBooksScene.action("take", ctx => {
         "Теперь книга закреплена за вами!",
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
-            m.callbackButton("back", "Назад к списку"),
-            m.callbackButton("menu", "В меню")
+            m.callbackButton("Назад к списку", "back"),
+            m.callbackButton("В меню", "menu")
           ])
         )
       );
