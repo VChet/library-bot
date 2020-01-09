@@ -1,7 +1,7 @@
 const { Category } = require("./category");
 const { Book } = require("./book");
 const { User } = require("./user");
-const { admins: data_admins } = require("./data_admins");
+const config = require("../config");
 const { books: data_books } = require("./data_books");
 
 async function initCollections() {
@@ -25,12 +25,11 @@ async function initCollections() {
   }
 
   async function createAdmin() {
-    const adminIds = data_admins.map(admin => admin.telegram_id);
+    const user = await User.findOne({ telegram_id: config.defaultAdmin.telegram_id }).lean();
+    if (user) return user;
 
-    const user = await User.find({ telegram_id: { $in: adminIds } }).lean();
-    if (user.length) return user;
-
-    return await User.insertMany(data_admins);
+    const newAdmin = new User(config.defaultAdmin);
+    return await newAdmin.save();
   }
 
   const category = await createCategory();

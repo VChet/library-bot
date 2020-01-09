@@ -23,5 +23,10 @@ module.exports = {
     password: ""
   },
   mongoUrl: "mongodb://localhost/library_bot",
+  defaultAdmin: {
+    telegram_id: "",
+    username: "",
+    role: ""
+  },
   ...overwriteConfig
 };
