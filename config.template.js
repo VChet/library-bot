@@ -23,6 +23,7 @@ module.exports = {
     password: ""
   },
   mongoUrl: "mongodb://localhost/library_bot",
+  initDefaultBooks: false,
   defaultAdmin: {
     telegram_id: "",
     username: "",

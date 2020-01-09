@@ -1,7 +1,6 @@
 const { Book } = require("./book");
 const { User } = require("./user");
 const config = require("../config");
-const { books: defaultBooks } = require("./data_books");
 
 async function initCollections() {
   if (process.env.NODE_ENV === "test") return;
@@ -10,6 +9,7 @@ async function initCollections() {
     const books = await Book.find({}).lean();
     if (books && books.length !== 0) return books;
 
+    const { books: defaultBooks } = require("./data_books");
     return await Book.insertMany(defaultBooks);
   }
 
@@ -21,7 +21,7 @@ async function initCollections() {
     return await newAdmin.save();
   }
 
-  createBooks();
+  if (config.initDefaultBooks) createBooks();
   createAdmin();
 }
 
