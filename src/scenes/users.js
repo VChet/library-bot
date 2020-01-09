@@ -6,6 +6,8 @@ const { User } = require("../../models/user");
 
 const usersScene = new Scene("usersScene");
 
+const getRole = (ctx) => ctx.scene.session.users.selected.role;
+
 usersScene.enter(ctx => {
   ctx.scene.session.users = {
     page: 1,
@@ -16,7 +18,8 @@ usersScene.enter(ctx => {
     if (error) console.log(error);
 
     ctx.scene.session.users.results = users;
-    ctx.editMessageText(`В базе ${users.length} ${declOfNum(users.length, ["пользователь", "пользователя", "пользователей"])}`,
+    ctx.editMessageText(
+      `В базе ${users.length} ${declOfNum(users.length, ["пользователь", "пользователя", "пользователей"])}`,
       listKeyboard(ctx, users)
     );
   });
@@ -28,29 +31,27 @@ usersScene.action(/get (.+)/, (ctx) => {
   ctx.scene.session.users.selected = userData;
   return ctx.editMessageText(
     `${userData.first_name} ${userData.last_name} @${userData.username} (${userData.role})`,
-    menuKeyboard()
+    Extra.HTML().markup(m =>
+      m.inlineKeyboard([
+        [
+          m.callbackButton("Повысить", "promote", getRole(ctx) === "Admin"),
+          m.callbackButton("Понизить", "demote", getRole(ctx) === "Guest")
+        ], [
+          m.callbackButton("Назад к списку", "back"),
+          m.callbackButton("В меню", "menu")
+        ]
+      ])
+    )
   );
 });
 
 usersScene.action("promote", ctx => {
   let newRole;
   const selectedUser = ctx.scene.session.users.selected;
-  switch (selectedUser.role) {
-    case "Guest":
-      newRole = "User";
-      break;
-    case "User":
-      newRole = "Admin";
-      break;
-    default:
-      break;
-  }
-  if (!newRole) {
-    ctx.editMessageText(
-      `${selectedUser.first_name} ${selectedUser.last_name} уже является администратором`,
-      menuKeyboard()
-    );
-    return;
+  if (selectedUser.role === "Guest") {
+    newRole = "User";
+  } else if (selectedUser.role === "User") {
+    newRole = "Admin";
   }
   User.findByIdAndUpdate(
     selectedUser._id,
@@ -61,7 +62,12 @@ usersScene.action("promote", ctx => {
 
       ctx.editMessageText(
         `Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`,
-        menuKeyboard()
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([
+            m.callbackButton("Назад к списку", "back"),
+            m.callbackButton("В меню", "menu")
+          ])
+        )
       );
     }
   );
@@ -70,21 +76,10 @@ usersScene.action("promote", ctx => {
 usersScene.action("demote", ctx => {
   let newRole;
   const selectedUser = ctx.scene.session.users.selected;
-  switch (selectedUser.role) {
-    case "Admin":
-      newRole = "User";
-      break;
-    case "User":
-      newRole = "Guest";
-      break;
-    default:
-      break;
-  }
-  if (!newRole) {
-    ctx.editMessageText(
-      `Пользователь ${selectedUser.first_name} ${selectedUser.last_name} не является подтвержденным`,
-      menuKeyboard()
-    );
+  if (selectedUser.role === "Admin") {
+    newRole = "User";
+  } else if (selectedUser.role === "User") {
+    newRole = "Guest";
   }
   User.findByIdAndUpdate(
     selectedUser._id,
@@ -95,7 +90,12 @@ usersScene.action("demote", ctx => {
 
       ctx.editMessageText(
         `Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`,
-        menuKeyboard()
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([
+            m.callbackButton("Назад к списку", "back"),
+            m.callbackButton("В меню", "menu")
+          ])
+        )
       );
     }
   );
@@ -122,20 +122,6 @@ usersScene.action(/changePage (.+)/, ctx => {
 
   return ctx.editMessageText(newMessage, listKeyboard(ctx, users));
 });
-
-function menuKeyboard() {
-  return Extra.HTML().markup(m =>
-    m.inlineKeyboard([
-      [
-        m.callbackButton("Повысить", "promote"),
-        m.callbackButton("Понизить", "demote")
-      ], [
-        m.callbackButton("Назад к списку", "back"),
-        m.callbackButton("В меню", "menu")
-      ]
-    ])
-  );
-}
 
 function listKeyboard(ctx, users) {
   const currentPage = ctx.scene.session.users.page;
