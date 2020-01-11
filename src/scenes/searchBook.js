@@ -60,8 +60,10 @@ searchBookScene.action(/get (.+)/, (ctx) => {
   ctx.scene.session.searchBook.selected = bookData;
   if (bookData.user) {
     if (bookData.user.toString() === ctx.session.user._id.toString()) {
+      let response = `Вернуть "${bookData.author} — ${bookData.name}"?`;
+      if (bookData.category) response += `\nРаздел "${bookData.category}"`;
       return ctx.editMessageText(
-        `Вернуть "${bookData.author} — ${bookData.name}"?`,
+        response,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
             [

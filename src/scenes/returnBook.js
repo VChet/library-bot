@@ -35,8 +35,10 @@ returnBookScene.action(/get (.+)/, (ctx) => {
   const bookId = ctx.match[1];
   const bookData = ctx.session.user.books.find(book => book._id.toString() === bookId.toString());
   ctx.scene.session.returnBook.selected = bookData;
+  let response = `Вернуть "${bookData.author} — ${bookData.name}"?`;
+  if (bookData.category) response += `\nРаздел "${bookData.category}"`;
   return ctx.editMessageText(
-    `Вернуть "${bookData.author} — ${bookData.name}"?`,
+    response,
     Extra.HTML().markup(m =>
       m.inlineKeyboard([
         [
