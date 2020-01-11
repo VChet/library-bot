@@ -7,7 +7,7 @@ const { Book } = require("../../models/book");
 const availableBooksScene = new Scene("availableBooksScene");
 
 availableBooksScene.enter(ctx => {
-  ctx.scene.session.availableBooks = {
+  ctx.scene.session = {
     page: 1,
     results: {}
   };
@@ -15,7 +15,7 @@ availableBooksScene.enter(ctx => {
   Book.find({ user: null, is_archived: false }).lean().exec((error, books) => {
     if (error) console.log(error);
 
-    ctx.scene.session.availableBooks.results = books;
+    ctx.scene.session.results = books;
     if (books.length) {
       ctx.editMessageText(`В библиотеке ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}`,
         booksKeyboard(ctx, books)
@@ -33,8 +33,8 @@ availableBooksScene.enter(ctx => {
 
 availableBooksScene.action(/get (.+)/, (ctx) => {
   const bookId = ctx.match[1];
-  const bookData = ctx.scene.session.availableBooks.results.find(book => book._id.toString() === bookId.toString());
-  ctx.scene.session.availableBooks.selected = bookData;
+  const bookData = ctx.scene.session.results.find(book => book._id.toString() === bookId.toString());
+  ctx.scene.session.selected = bookData;
   return ctx.editMessageText(
     `Выбранная книга: ${bookData.author} — ${bookData.name}.`,
     Extra.HTML().markup(m =>
@@ -52,7 +52,7 @@ availableBooksScene.action(/get (.+)/, (ctx) => {
 
 availableBooksScene.action("take", ctx => {
   Book.findByIdAndUpdate(
-    ctx.scene.session.availableBooks.selected._id,
+    ctx.scene.session.selected._id,
     { $set: { user: ctx.session.user._id } },
     { new: true },
     (error, book) => {
@@ -82,11 +82,11 @@ availableBooksScene.action("menu", ctx => {
 
 availableBooksScene.action(/changePage (.+)/, ctx => {
   ctx.match[1] === "next" ?
-    ctx.scene.session.availableBooks.page++ :
-    ctx.scene.session.availableBooks.page--;
+    ctx.scene.session.page++ :
+    ctx.scene.session.page--;
 
-  const books = ctx.scene.session.availableBooks.results;
-  const currentPage = ctx.scene.session.availableBooks.page;
+  const books = ctx.scene.session.results;
+  const currentPage = ctx.scene.session.page;
   const firstBooksBorder = 1 + (currentPage - 1) * 10;
   const secondBooksBorder = currentPage * 10 > books.length ? books.length : currentPage * 10;
 
@@ -96,7 +96,7 @@ availableBooksScene.action(/changePage (.+)/, ctx => {
 });
 
 function booksKeyboard(ctx, books) {
-  const currentPage = ctx.scene.session.availableBooks.page;
+  const currentPage = ctx.scene.session.page;
 
   return Extra.HTML().markup(m => {
     const keyboard = [];

@@ -15,9 +15,7 @@ addBookScene.enter(ctx => {
 });
 
 addBookScene.on("message", ctx => {
-  ctx.scene.session.addBook = {
-    bookData: {}
-  };
+  ctx.scene.session.bookData = {};
 
   const arr = ctx.message.text.split("\n");
   if (arr.length !== 3) {
@@ -34,7 +32,7 @@ addBookScene.on("message", ctx => {
     category: arr[2]
   };
 
-  ctx.scene.session.addBook.bookData = bookData;
+  ctx.scene.session.bookData = bookData;
 
   Book.findOne({ author: bookData.author, name: bookData.name }).lean().exec((error, book) => {
     if (error) console.log(error);
@@ -64,7 +62,7 @@ addBookScene.on("message", ctx => {
 });
 
 addBookScene.action("add", ctx => {
-  const bookData = ctx.scene.session.addBook.bookData;
+  const bookData = ctx.scene.session.bookData;
   Book.create(bookData, (error, book) => {
     if (error) console.log(error);
 

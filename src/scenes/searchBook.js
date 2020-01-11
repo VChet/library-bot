@@ -19,21 +19,21 @@ searchBookScene.enter(ctx => {
 });
 
 searchBookScene.on("message", ctx => {
-  ctx.scene.session.searchBook = {
+  ctx.scene.session = {
     query: "",
     results: [],
     selected: {}
   };
 
-  ctx.scene.session.searchBook.query = ctx.message.text;
+  ctx.scene.session.query = ctx.message.text;
 
   Book.find({ $text: { $search: ctx.message.text }, is_archived: false }).lean().exec((error, books) => {
     if (error) return console.log(error);
     if (books.length) {
       if (books.length > 100) {
-        ctx.scene.session.searchBook.results = books.slice(0, 99);
+        ctx.scene.session.results = books.slice(0, 99);
       } else {
-        ctx.scene.session.searchBook.results = books;
+        ctx.scene.session.results = books;
       }
 
       ctx.reply(
@@ -56,8 +56,8 @@ searchBookScene.on("message", ctx => {
 
 searchBookScene.action(/get (.+)/, (ctx) => {
   const bookId = ctx.match[1];
-  const bookData = ctx.scene.session.searchBook.results.find(book => book._id.toString() === bookId.toString());
-  ctx.scene.session.searchBook.selected = bookData;
+  const bookData = ctx.scene.session.results.find(book => book._id.toString() === bookId.toString());
+  ctx.scene.session.selected = bookData;
   if (bookData.user) {
     if (bookData.user.toString() === ctx.session.user._id.toString()) {
       let response = `Вернуть "${bookData.author} — ${bookData.name}"?`;
@@ -115,7 +115,7 @@ searchBookScene.action(/get (.+)/, (ctx) => {
 
 searchBookScene.action("return", ctx => {
   Book.findByIdAndUpdate(
-    ctx.scene.session.searchBook.selected._id,
+    ctx.scene.session.selected._id,
     { $set: { user: null } },
     { new: true },
     (error, book) => {
@@ -136,7 +136,7 @@ searchBookScene.action("return", ctx => {
 
 searchBookScene.action("take", ctx => {
   Book.findByIdAndUpdate(
-    ctx.scene.session.searchBook.selected._id,
+    ctx.scene.session.selected._id,
     { $set: { user: ctx.session.user._id } },
     { new: true },
     (error, book) => {
@@ -157,7 +157,7 @@ searchBookScene.action("take", ctx => {
 
 searchBookScene.action("archiveCheck", ctx => {
   ctx.editMessageText(
-    `Архивировать "${ctx.scene.session.searchBook.selected.name}"? Книга будет недоступна и перестанет отображаться в поиске. Внимание, это действие необратимо!`,
+    `Архивировать "${ctx.scene.session.selected.name}"? Книга будет недоступна и перестанет отображаться в поиске. Внимание, это действие необратимо!`,
     Extra.HTML().markup(m =>
       m.inlineKeyboard([
         [m.callbackButton("Понятно, в архив!", "archive")],
@@ -171,14 +171,14 @@ searchBookScene.action("archiveCheck", ctx => {
 });
 
 searchBookScene.action("edit", ctx => {
-  ctx.session.selectedBook = ctx.scene.session.searchBook.selected;
+  ctx.session.selectedBook = ctx.scene.session.selected;
   ctx.scene.leave();
   return ctx.scene.enter("editBookScene");
 });
 
 searchBookScene.action("archive", ctx => {
   Book.findByIdAndUpdate(
-    ctx.scene.session.searchBook.selected._id,
+    ctx.scene.session.selected._id,
     { $set: { is_archived: true } },
     { new: true },
     (error, book) => {

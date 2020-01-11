@@ -9,7 +9,7 @@ const usersScene = new Scene("usersScene");
 const getRole = (ctx) => ctx.scene.session.users.selected.role;
 
 usersScene.enter(ctx => {
-  ctx.scene.session.users = {
+  ctx.scene.session = {
     page: 1,
     results: {}
   };
@@ -17,7 +17,7 @@ usersScene.enter(ctx => {
   User.find().lean().exec((error, users) => {
     if (error) console.log(error);
 
-    ctx.scene.session.users.results = users;
+    ctx.scene.session.results = users;
     ctx.editMessageText(
       `В базе ${users.length} ${declOfNum(users.length, ["пользователь", "пользователя", "пользователей"])}`,
       listKeyboard(ctx, users)
@@ -27,8 +27,8 @@ usersScene.enter(ctx => {
 
 usersScene.action(/get (.+)/, (ctx) => {
   const userId = ctx.match[1];
-  const userData = ctx.scene.session.users.results.find(user => user._id.toString() === userId.toString());
-  ctx.scene.session.users.selected = userData;
+  const userData = ctx.scene.session.results.find(user => user._id.toString() === userId.toString());
+  ctx.scene.session.selected = userData;
   return ctx.editMessageText(
     `${userData.first_name} ${userData.last_name} @${userData.username} (${userData.role})`,
     Extra.HTML().markup(m =>
@@ -47,7 +47,7 @@ usersScene.action(/get (.+)/, (ctx) => {
 
 usersScene.action("promote", ctx => {
   let newRole;
-  const selectedUser = ctx.scene.session.users.selected;
+  const selectedUser = ctx.scene.session.selected;
   if (selectedUser.role === "Guest") {
     newRole = "User";
   } else if (selectedUser.role === "User") {
@@ -75,7 +75,7 @@ usersScene.action("promote", ctx => {
 
 usersScene.action("demote", ctx => {
   let newRole;
-  const selectedUser = ctx.scene.session.users.selected;
+  const selectedUser = ctx.scene.session.selected;
   if (selectedUser.role === "Admin") {
     newRole = "User";
   } else if (selectedUser.role === "User") {
@@ -111,10 +111,10 @@ usersScene.action("menu", ctx => {
 });
 
 usersScene.action(/changePage (.+)/, ctx => {
-  ctx.match[1] === "next" ? ctx.scene.session.users.page++ : ctx.scene.session.users.page--;
+  ctx.match[1] === "next" ? ctx.scene.session.page++ : ctx.scene.session.page--;
 
-  const users = ctx.scene.session.users.results;
-  const currentPage = ctx.scene.session.users.page;
+  const users = ctx.scene.session.results;
+  const currentPage = ctx.scene.session.page;
   const firstUsersBorder = 1 + (currentPage - 1) * 10;
   const secondUsersBorder = currentPage * 10 > users.length ? users.length : currentPage * 10;
 
@@ -124,7 +124,7 @@ usersScene.action(/changePage (.+)/, ctx => {
 });
 
 function listKeyboard(ctx, users) {
-  const currentPage = ctx.scene.session.users.page;
+  const currentPage = ctx.scene.session.page;
 
   return Extra.HTML().markup(m => {
     const keyboard = [];

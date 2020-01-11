@@ -7,7 +7,7 @@ const { Book } = require("../../models/book");
 const returnBookScene = new Scene("returnBookScene");
 
 returnBookScene.enter(ctx => {
-  ctx.scene.session.returnBook = {
+  ctx.scene.session = {
     userBooks: [],
     selected: {}
   };
@@ -16,7 +16,7 @@ returnBookScene.enter(ctx => {
     if (error) console.log(error);
 
     if (books.length) {
-      ctx.scene.session.returnBook.userBooks = books;
+      ctx.scene.session.userBooks = books;
       ctx.editMessageText(
         `У вас ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}. Выберите книгу, которую хотите вернуть:`,
         booksKeyboard(books)
@@ -34,8 +34,8 @@ returnBookScene.enter(ctx => {
 
 returnBookScene.action(/get (.+)/, (ctx) => {
   const bookId = ctx.match[1];
-  const bookData = ctx.scene.session.returnBook.userBooks.find(book => book._id.toString() === bookId.toString());
-  ctx.scene.session.returnBook.selected = bookData;
+  const bookData = ctx.scene.session.userBooks.find(book => book._id.toString() === bookId.toString());
+  ctx.scene.session.selected = bookData;
   let response = `Вернуть "${bookData.author} — ${bookData.name}"?`;
   if (bookData.category) response += `\nРаздел "${bookData.category}"`;
   return ctx.editMessageText(
@@ -55,7 +55,7 @@ returnBookScene.action(/get (.+)/, (ctx) => {
 
 returnBookScene.action("return", ctx => {
   Book.findByIdAndUpdate(
-    ctx.scene.session.returnBook.selected._id,
+    ctx.scene.session.selected._id,
     { $set: { user: null } },
     { new: true },
     (error, book) => {
