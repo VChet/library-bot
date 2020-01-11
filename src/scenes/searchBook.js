@@ -67,9 +67,10 @@ searchBookScene.action(/get (.+)/, (ctx) => {
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
             [
-              m.callbackButton("Вернуть книгу", "return"),
+              m.callbackButton("Вернуть книгу", "return")
+            ], [
+              m.callbackButton("⚠️ Изменить", "edit", hideButton(ctx)),
               m.callbackButton("⚠️ В архив", "archiveCheck", hideButton(ctx))
-              // TODO: add 'edit book' button and action
             ], [
               m.callbackButton("Искать ещё", "findAgain"),
               m.callbackButton("В меню", "menu")
@@ -98,9 +99,10 @@ searchBookScene.action(/get (.+)/, (ctx) => {
       Extra.HTML().markup(m =>
         m.inlineKeyboard([
           [
-            m.callbackButton("Взять книгу", "take"),
+            m.callbackButton("Взять книгу", "take")
+          ], [
+            m.callbackButton("⚠️ Изменить", "edit", hideButton(ctx)),
             m.callbackButton("⚠️ В архив", "archiveCheck", hideButton(ctx))
-            // TODO: add 'edit book' button and action
           ], [
             m.callbackButton("Искать ещё", "findAgain"),
             m.callbackButton("В меню", "menu")
@@ -166,6 +168,12 @@ searchBookScene.action("archiveCheck", ctx => {
       ])
     )
   );
+});
+
+searchBookScene.action("edit", ctx => {
+  ctx.session.selectedBook = ctx.scene.session.searchBook.selected;
+  ctx.scene.leave();
+  return ctx.scene.enter("editBookScene");
 });
 
 searchBookScene.action("archive", ctx => {
