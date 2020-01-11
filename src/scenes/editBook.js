@@ -2,6 +2,7 @@ const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
 const { Book } = require("../../models/book");
+const { replyWithError } = require("../components/error");
 
 const editBookScene = new Scene("editBookScene");
 
@@ -62,7 +63,7 @@ editBookScene.action("edit", ctx => {
     { $set: bookData },
     { new: true },
     (error, book) => {
-      if (error) console.log(error);
+      if (error) replyWithError(ctx, error);
 
       ctx.editMessageText(
         "Данные книги обновлены!",

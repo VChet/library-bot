@@ -3,6 +3,7 @@ const { Extra } = require("telegraf");
 
 const { declOfNum } = require("../helpers");
 const { User } = require("../../models/user");
+const { replyWithError } = require("../components/error");
 
 const usersScene = new Scene("usersScene");
 
@@ -16,7 +17,7 @@ usersScene.enter(ctx => {
   };
 
   User.find().lean().exec((error, users) => {
-    if (error) console.log(error);
+    if (error) replyWithError(ctx, error);
 
     ctx.scene.session.results = users;
     ctx.editMessageText(
@@ -59,7 +60,7 @@ usersScene.action("promote", ctx => {
     { $set: { role: newRole } },
     { new: true },
     (error, user) => {
-      if (error) console.log(error);
+      if (error) replyWithError(ctx, error);
 
       ctx.editMessageText(
         `Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`,
@@ -87,7 +88,7 @@ usersScene.action("demote", ctx => {
     { $set: { role: newRole } },
     { new: true },
     (error, user) => {
-      if (error) console.log(error);
+      if (error) replyWithError(ctx, error);
 
       ctx.editMessageText(
         `Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`,

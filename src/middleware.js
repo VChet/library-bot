@@ -1,4 +1,5 @@
 const { User } = require("../models/user");
+const { replyWithError } = require("./components/error");
 const config = require("../config");
 
 async function createUser(data) {
@@ -28,7 +29,9 @@ function updateUser(ctx) {
         }
       },
       { new: true },
-      (error) => error && console.log(error)
+      (error) => {
+        if (error) replyWithError(ctx, error);
+      }
     );
   }
 }

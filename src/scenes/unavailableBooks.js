@@ -3,6 +3,7 @@ const { Extra } = require("telegraf");
 
 const { declOfNum } = require("../helpers");
 const { Book } = require("../../models/book");
+const { replyWithError } = require("../components/error");
 
 const unavailableBooksScene = new Scene("unavailableBooksScene");
 
@@ -12,7 +13,7 @@ unavailableBooksScene.enter(ctx => {
   };
 
   Book.find({ user: { $ne: null }, is_archived: false }).populate("user").lean().exec((error, books) => {
-    if (error) console.log(error);
+    if (error) replyWithError(ctx, error);
 
     ctx.scene.session.results = books;
     const booksList = books.map(book => `${book.author} — ${book.name} (@${book.user.username})`).join("\n");

@@ -6,6 +6,7 @@ const XLSX = require("xlsx");
 
 const config = require("../../config");
 const { Book } = require("../../models/book");
+const { replyWithError } = require("../components/error");
 
 const uploadBooksScene = new Scene("uploadBooksScene");
 
@@ -44,7 +45,7 @@ uploadBooksScene.on("document", ctx => {
               books,
               { ordered: false },
               (error) => {
-                if (error) console.log(error);
+                if (error) replyWithError(ctx, error);
 
                 ctx.reply(
                   `Книги из файла "${ctx.message.document.file_name}" добавлены!`,
@@ -59,13 +60,11 @@ uploadBooksScene.on("document", ctx => {
             );
           })
           .catch(error => {
-            console.log(error);
-            ctx.reply("Ошибка при скачивании файла ботом", keyboard);
+            replyWithError(ctx, error);
           });
       })
       .catch(error => {
-        console.log(error);
-        ctx.reply("Ошибка при загрузке файла", keyboard);
+        replyWithError(ctx, error);
       });
   } else {
     ctx.reply("Данный файл не является xlsx", keyboard);

@@ -2,6 +2,7 @@ const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
 const { Book } = require("../../models/book");
+const { replyWithError } = require("../components/error");
 const { bookPaginator } = require("../components/bookPaginator");
 const { declOfNum } = require("../helpers");
 
@@ -14,7 +15,7 @@ returnBookScene.enter(ctx => {
   };
 
   Book.find({ user: ctx.session.user._id }).lean().exec((error, books) => {
-    if (error) console.log(error);
+    if (error) replyWithError(ctx, error);
 
     if (books.length) {
       ctx.scene.session.userBooks = books;
@@ -60,7 +61,7 @@ returnBookScene.action("return", ctx => {
     { $set: { user: null } },
     { new: true },
     (error, book) => {
-      if (error) console.log(error);
+      if (error) replyWithError(ctx, error);
 
       ctx.editMessageText(
         `Вы вернули книгу "${book.author} — ${book.name}". Спасибо!`,

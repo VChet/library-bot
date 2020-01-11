@@ -2,6 +2,7 @@ const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
 const { Book } = require("../../models/book");
+const { replyWithError } = require("../components/error");
 
 const addBookScene = new Scene("addBookScene");
 
@@ -35,7 +36,7 @@ addBookScene.on("message", ctx => {
   ctx.scene.session.bookData = bookData;
 
   Book.findOne({ author: bookData.author, name: bookData.name }).lean().exec((error, book) => {
-    if (error) console.log(error);
+    if (error) replyWithError(ctx, error);
 
     if (book) {
       return ctx.reply(
@@ -64,7 +65,7 @@ addBookScene.on("message", ctx => {
 addBookScene.action("add", ctx => {
   const bookData = ctx.scene.session.bookData;
   Book.create(bookData, (error, book) => {
-    if (error) console.log(error);
+    if (error) replyWithError(ctx, error);
 
     ctx.editMessageText(
       "Книга добавлена!",

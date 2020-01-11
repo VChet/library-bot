@@ -3,6 +3,7 @@ const { Extra } = require("telegraf");
 
 const { Book } = require("../../models/book");
 const { User } = require("../../models/user");
+const { replyWithError } = require("../components/error");
 const { bookPaginator } = require("../components/bookPaginator");
 const { declOfNum } = require("../helpers");
 
@@ -29,7 +30,7 @@ searchBookScene.on("message", ctx => {
   ctx.scene.session.query = ctx.message.text;
 
   Book.find({ $text: { $search: ctx.message.text }, is_archived: false }).lean().exec((error, books) => {
-    if (error) return console.log(error);
+    if (error) replyWithError(ctx, error);
     if (books.length) {
       ctx.reply(
         `Найдено ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}:`,
@@ -76,7 +77,7 @@ searchBookScene.action(/get (.+)/, (ctx) => {
     }
 
     User.findById(bookData.user).lean().exec((error, user) => {
-      if (error) console.log(error);
+      if (error) replyWithError(ctx, error);
 
       return ctx.editMessageText(
         `${bookData.name} сейчас у @${user.username}`,
@@ -114,7 +115,7 @@ searchBookScene.action("return", ctx => {
     { $set: { user: null } },
     { new: true },
     (error, book) => {
-      if (error) console.log(error);
+      if (error) replyWithError(ctx, error);
 
       ctx.editMessageText(
         `Вы вернули книгу "${book.author} — ${book.name}". Спасибо!`,
@@ -135,7 +136,7 @@ searchBookScene.action("take", ctx => {
     { $set: { user: ctx.session.user._id } },
     { new: true },
     (error, book) => {
-      if (error) console.log(error);
+      if (error) replyWithError(ctx, error);
 
       ctx.editMessageText(
         `Теперь книга "${book.name}" закреплена за вами!`,
@@ -177,7 +178,7 @@ searchBookScene.action("archive", ctx => {
     { $set: { is_archived: true } },
     { new: true },
     (error, book) => {
-      if (error) console.log(error);
+      if (error) replyWithError(ctx, error);
 
       ctx.editMessageText(
         `Книга "${book.name}" архивирована`,
