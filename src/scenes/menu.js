@@ -23,8 +23,8 @@ menuScene.enter(ctx => {
           m.callbackButton("Недоступные книги", "/unavailable")
         ],
         [
-          // TODO: add 'add book' button and action
-          m.callbackButton("⚠️ Пользователи", "/users", hide)
+          m.callbackButton("⚠️ Пользователи", "/users", hide),
+          m.callbackButton("⚠️ Добавить книгу", "/add", hide)
         ]
       ];
       return m.inlineKeyboard(buttons);
@@ -50,6 +50,10 @@ menuScene.action("/unavailable", ctx => {
 
 menuScene.action("/users", isAdmin, ctx => {
   ctx.scene.enter("usersScene");
+});
+
+menuScene.action("/add", isAdmin, ctx => {
+  ctx.scene.enter("addBookScene");
 });
 
 module.exports = {

@@ -12,13 +12,15 @@ const { returnBookScene } = require("./scenes/returnBook");
 const { availableBooksScene } = require("./scenes/availableBooks");
 const { unavailableBooksScene } = require("./scenes/unavailableBooks");
 const { usersScene } = require("./scenes/users");
+const { addBookScene } = require("./scenes/addBook");
 const scenes = [
   menuScene,
   searchBookScene,
   returnBookScene,
   availableBooksScene,
   unavailableBooksScene,
-  usersScene
+  usersScene,
+  addBookScene
 ];
 const stage = new Stage(scenes);
 
