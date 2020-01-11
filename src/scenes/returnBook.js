@@ -8,6 +8,7 @@ const returnBookScene = new Scene("returnBookScene");
 
 returnBookScene.enter(ctx => {
   ctx.scene.session.returnBook = {
+    userBooks: [],
     selected: {}
   };
 
@@ -15,7 +16,7 @@ returnBookScene.enter(ctx => {
     if (error) console.log(error);
 
     if (books.length) {
-      ctx.session.user.books = books;
+      ctx.scene.session.returnBook.userBooks = books;
       ctx.editMessageText(
         `У вас ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}. Выберите книгу, которую хотите вернуть:`,
         booksKeyboard(books)
@@ -33,7 +34,7 @@ returnBookScene.enter(ctx => {
 
 returnBookScene.action(/get (.+)/, (ctx) => {
   const bookId = ctx.match[1];
-  const bookData = ctx.session.user.books.find(book => book._id.toString() === bookId.toString());
+  const bookData = ctx.scene.session.returnBook.userBooks.find(book => book._id.toString() === bookId.toString());
   ctx.scene.session.returnBook.selected = bookData;
   let response = `Вернуть "${bookData.author} — ${bookData.name}"?`;
   if (bookData.category) response += `\nРаздел "${bookData.category}"`;
