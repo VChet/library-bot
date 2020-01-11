@@ -23,11 +23,12 @@ module.exports = {
     password: ""
   },
   mongoUrl: "mongodb://localhost/library_bot",
+  userValidation: true,
   initDefaultBooks: false,
   defaultAdmin: {
     telegram_id: "",
     username: "",
-    role: ""
+    role: "Admin"
   },
   ...overwriteConfig
 };

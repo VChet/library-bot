@@ -3,6 +3,8 @@ module.exports = { startSceneHandler };
 const session = require("telegraf/session");
 const Stage = require("telegraf/stage");
 
+const config = require("../config");
+
 // Scenes
 const { menuScene } = require("./scenes/menu");
 const { searchBookScene } = require("./scenes/searchBook");
@@ -44,7 +46,7 @@ function startSceneHandler(bot) {
         ctx.session.user = newUser;
       }
     }
-    if (ctx.session.user.role === "Guest") {
+    if (ctx.session.user.role === "Guest" && config.userValidation) {
       const user = await User.findOne({ telegram_id: ctx.session.user.telegram_id }).lean();
       if (user.role === "Guest") {
         ctx.reply("Аккаунт ожидает подтверждения");
