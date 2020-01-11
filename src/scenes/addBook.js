@@ -21,7 +21,7 @@ addBookScene.on("message", ctx => {
 
   const arr = ctx.message.text.split("\n");
   if (arr.length !== 3) {
-    ctx.reply(
+    return ctx.reply(
       "Что-то не так, попробуйте снова",
       Extra.HTML().markup(m =>
         m.inlineKeyboard([m.callbackButton("Отмена", "menu")])
@@ -36,15 +36,31 @@ addBookScene.on("message", ctx => {
 
   ctx.scene.session.addBook.bookData = bookData;
 
-  ctx.reply(
-    `Все верно?\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nКатегория: ${bookData.category}`,
-    Extra.HTML().markup(m =>
-      m.inlineKeyboard([
-        m.callbackButton("Да", "add"),
-        m.callbackButton("Нет", "back"),
-      ])
-    )
-  );
+  Book.findOne({ name: bookData.name }).lean().exec((error, book) => {
+    if (error) console.log(error);
+
+    if (book) {
+      return ctx.reply(
+        `В библиотеке уже есть книга с названием "${book.name}"\nВы можете добавить к названию номер экземпляра`,
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([
+            m.callbackButton("Попробовать снова", "back"),
+            m.callbackButton("В меню", "menu"),
+          ])
+        )
+      );
+    }
+
+    ctx.reply(
+      `Все верно?\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nКатегория: ${bookData.category}`,
+      Extra.HTML().markup(m =>
+        m.inlineKeyboard([
+          m.callbackButton("Да", "add"),
+          m.callbackButton("Нет", "back"),
+        ])
+      )
+    );
+  });
 });
 
 addBookScene.action("add", ctx => {
