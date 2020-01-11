@@ -64,12 +64,14 @@ searchBookScene.action(/get (.+)/, (ctx) => {
         `Вернуть "${bookData.author} — ${bookData.name}"?`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
-            m.callbackButton("Вернуть книгу", "return"),
-            m.callbackButton("⚠️ В архив", "archiveCheck", hideButton(ctx))
-            // TODO: add 'edit book' button and action
-          ], [
-            m.callbackButton("Искать ещё", "findAgain"),
-            m.callbackButton("В меню", "menu")
+            [
+              m.callbackButton("Вернуть книгу", "return"),
+              m.callbackButton("⚠️ В архив", "archiveCheck", hideButton(ctx))
+              // TODO: add 'edit book' button and action
+            ], [
+              m.callbackButton("Искать ещё", "findAgain"),
+              m.callbackButton("В меню", "menu")
+            ]
           ])
         )
       );
