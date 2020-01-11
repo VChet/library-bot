@@ -30,53 +30,46 @@ function startSceneHandler(bot) {
   bot.use(stage.middleware());
 
   bot.on(["message", "callback_query"], async (ctx, next) => {
-    if (!ctx.session.user) {
-      const userData = ctx.from;
-      const user = await User.findOne({ telegram_id: userData.id }).lean();
-      if (user) {
-        ctx.session.user = user;
-      } else {
-        const newUser = new User({
-          telegram_id: userData.id,
-          first_name: userData.first_name,
-          last_name: userData.last_name,
-          username: userData.username
-        });
-        await newUser.save();
-        ctx.session.user = newUser;
-      }
-    }
-    if (ctx.session.user.role === "Guest" && config.userValidation) {
-      const user = await User.findOne({ telegram_id: ctx.session.user.telegram_id }).lean();
-      if (user.role === "Guest") {
-        ctx.reply("Аккаунт ожидает подтверждения");
-      } else {
-        ctx.session.user = user;
-      }
+    const user = await User.findOne({ telegram_id: ctx.from.id }).lean();
+    // Create user if it doesn't exists and update session
+    if (!user) {
+      const newUser = new User({
+        telegram_id: ctx.from.id,
+        first_name: ctx.from.first_name,
+        last_name: ctx.from.last_name,
+        username: ctx.from.username
+      });
+      await newUser.save();
+      ctx.session.user = newUser;
     } else {
-      if (
-        ctx.session.user.first_name !== ctx.from.first_name ||
-        ctx.session.user.last_name !== ctx.from.last_name ||
-        ctx.session.user.username !== ctx.from.username
-      ) {
-        User.findOneAndUpdate(
-          { telegram_id: ctx.from.id },
-          { $set:
-            {
-              first_name: ctx.from.first_name,
-              last_name: ctx.from.last_name,
-              username: ctx.from.username
-            }
-          },
-          { new: true },
-          (error) => {
-            if (error) console.log(error);
-            next();
-          }
-        );
-      }
-      ctx.scene.enter("menuScene");
+      ctx.session.user = user;
     }
+    // Update user data in DB if it differs from the ctx.form data
+    if (
+      ctx.session.user.first_name !== ctx.from.first_name ||
+      ctx.session.user.last_name !== ctx.from.last_name ||
+      ctx.session.user.username !== ctx.from.username
+    ) {
+      User.findOneAndUpdate(
+        { telegram_id: ctx.from.id },
+        { $set:
+          {
+            first_name: ctx.from.first_name,
+            last_name: ctx.from.last_name,
+            username: ctx.from.username
+          }
+        },
+        { new: true },
+        (error) => {
+          if (error) console.log(error);
+        }
+      );
+    }
+    // Check role
+    if (config.userValidation && ctx.session.user.role === "Guest") {
+      return ctx.reply("Аккаунт ожидает подтверждения");
+    }
+    ctx.scene.enter("menuScene");
   });
 
   bot.start(ctx => {
