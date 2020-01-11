@@ -45,8 +45,12 @@ function startSceneHandler(bot) {
       }
     }
     if (ctx.session.user.role === "Guest") {
-      ctx.reply("Аккаунт ожидает подтверждения");
-    } else {
+      const user = await User.findOne({ telegram_id: ctx.session.user.telegram_id }).lean();
+      if (user.role === "Guest") {
+        ctx.reply("Аккаунт ожидает подтверждения");
+      } else {
+        ctx.session.user = user;
+      }
       ctx.scene.enter("menuScene");
     }
   });
