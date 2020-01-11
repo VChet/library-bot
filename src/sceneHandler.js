@@ -51,6 +51,28 @@ function startSceneHandler(bot) {
       } else {
         ctx.session.user = user;
       }
+    } else {
+      if (
+        ctx.session.user.first_name !== ctx.from.first_name ||
+        ctx.session.user.last_name !== ctx.from.last_name ||
+        ctx.session.user.username !== ctx.from.username
+      ) {
+        User.findOneAndUpdate(
+          { telegram_id: ctx.from.id },
+          { $set:
+            {
+              first_name: ctx.from.first_name,
+              last_name: ctx.from.last_name,
+              username: ctx.from.username
+            }
+          },
+          { new: true },
+          (error) => {
+            if (error) console.log(error);
+            next();
+          }
+        );
+      }
       ctx.scene.enter("menuScene");
     }
   });
