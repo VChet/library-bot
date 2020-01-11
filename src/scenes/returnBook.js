@@ -1,8 +1,9 @@
 const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
-const { declOfNum } = require("../helpers");
 const { Book } = require("../../models/book");
+const { bookPaginator } = require("../components/bookPaginator");
+const { declOfNum } = require("../helpers");
 
 const returnBookScene = new Scene("returnBookScene");
 
@@ -19,7 +20,7 @@ returnBookScene.enter(ctx => {
       ctx.scene.session.userBooks = books;
       ctx.editMessageText(
         `У вас ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}. Выберите книгу, которую хотите вернуть:`,
-        booksKeyboard(books)
+        bookPaginator.keyboard(books)
       );
     } else {
       ctx.editMessageText(
@@ -83,15 +84,7 @@ returnBookScene.action("menu", ctx => {
   return ctx.scene.enter("menuScene");
 });
 
-function booksKeyboard(books) {
-  return Extra.HTML().markup(m =>
-    m.inlineKeyboard(
-      books.map(book => [
-        m.callbackButton(`${book.author} — ${book.name}`, `get ${book._id}`)
-      ])
-    )
-  );
-}
+returnBookScene.action(/changePage (.+)/, bookPaginator.changePageAction);
 
 module.exports = {
   returnBookScene

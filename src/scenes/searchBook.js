@@ -1,9 +1,10 @@
 const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
-const { declOfNum } = require("../helpers");
 const { Book } = require("../../models/book");
 const { User } = require("../../models/user");
+const { bookPaginator } = require("../components/bookPaginator");
+const { declOfNum } = require("../helpers");
 
 const searchBookScene = new Scene("searchBookScene");
 
@@ -30,15 +31,9 @@ searchBookScene.on("message", ctx => {
   Book.find({ $text: { $search: ctx.message.text }, is_archived: false }).lean().exec((error, books) => {
     if (error) return console.log(error);
     if (books.length) {
-      if (books.length > 100) {
-        ctx.scene.session.results = books.slice(0, 99);
-      } else {
-        ctx.scene.session.results = books;
-      }
-
       ctx.reply(
         `Найдено ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}:`,
-        booksKeyboard(books)
+        bookPaginator.keyboard(books)
       );
     } else {
       ctx.reply(
@@ -206,15 +201,7 @@ searchBookScene.action("menu", ctx => {
   return ctx.scene.enter("menuScene");
 });
 
-function booksKeyboard(books) {
-  return Extra.HTML().markup(m =>
-    m.inlineKeyboard(
-      books.map(book => [
-        m.callbackButton(`${book.author} — ${book.name} ${book.user ? "❌" : ""}`, `get ${book._id}`)
-      ])
-    )
-  );
-}
+searchBookScene.action(/changePage (.+)/, bookPaginator.changePageAction);
 
 module.exports = {
   searchBookScene

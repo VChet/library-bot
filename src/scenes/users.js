@@ -6,12 +6,13 @@ const { User } = require("../../models/user");
 
 const usersScene = new Scene("usersScene");
 
-const getRole = (ctx) => ctx.scene.session.users.selected.role;
+const getRole = (ctx) => ctx.scene.session.selected.role;
 
 usersScene.enter(ctx => {
   ctx.scene.session = {
     page: 1,
-    results: {}
+    results: [],
+    selected: {}
   };
 
   User.find().lean().exec((error, users) => {
