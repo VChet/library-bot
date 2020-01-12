@@ -7,6 +7,7 @@ const XLSX = require("xlsx");
 const config = require("../../config");
 const { Book } = require("../../models/book");
 const { replyWithError } = require("../components/error");
+const { declOfNum } = require("../helpers");
 
 const uploadBooksScene = new Scene("uploadBooksScene");
 
@@ -44,11 +45,20 @@ uploadBooksScene.on("document", ctx => {
             Book.insertMany(
               books,
               { ordered: false },
-              (error) => {
-                if (error) replyWithError(ctx, error);
+              (output) => {
+                let error;
+                if (output.writeErrors.length) {
+                  console.error(output.writeErrors);
+                  error = `Не было добавлено ${output.writeErrors.length} книг`;
+                }
+
+                const count = parseInt(output.result.result.nInserted);
+
+                let response = `Из файла "${ctx.message.document.file_name}" добавлено ${count} ${declOfNum(count, ["книга", "книги", "книг"])}`;
+                if (error) response += "\n" + error;
 
                 ctx.reply(
-                  `Книги из файла "${ctx.message.document.file_name}" добавлены!`,
+                  response,
                   Extra.HTML().markup(m =>
                     m.inlineKeyboard([
                       m.callbackButton("Добавить ещё", "back"),
