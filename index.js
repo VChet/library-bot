@@ -1,24 +1,15 @@
 const Telegraf = require("telegraf");
 const session = require("telegraf/session");
-const Agent = require("socks5-https-client/lib/Agent");
 
 const config = require("./config");
+const { socksAgent } = require("./src/components/socksAgent");
 const { connectToDB } = require("./database");
 const { startSceneHandler } = require("./src/sceneHandler");
 const { middleware } = require("./src/middleware");
 
 connectToDB();
 
-let proxy = {};
-if (config.useProxy) {
-  const socksAgent = new Agent({
-    socksHost: config.proxy.host,
-    socksPort: parseInt(config.proxy.port),
-    socksUsername: config.proxy.username,
-    socksPassword: config.proxy.password,
-  });
-  proxy = { telegram: { agent: socksAgent } };
-}
+const proxy = config.useProxy ? { telegram: { agent: socksAgent } } : {};
 
 const bot = new Telegraf(config.token, proxy);
 bot.use(session());
