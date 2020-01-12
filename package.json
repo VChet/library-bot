@@ -16,9 +16,11 @@
     "start": "nodemon index.js"
   },
   "dependencies": {
+    "axios": "^0.19.1",
     "mongoose": "^5.8.3",
     "socks5-https-client": "^1.2.1",
-    "telegraf": "^3.35.0"
+    "telegraf": "^3.35.0",
+    "xlsx": "^0.15.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"
