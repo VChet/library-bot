@@ -30,7 +30,7 @@ uploadBooksScene.on("document", ctx => {
           responseType: "arraybuffer"
         })
           .then(file => {
-            const books = pasrseXLSX(file.data);
+            const books = parseXLSX(file.data);
 
             Book.insertMany(books, (error, book) => {
               if (error) console.log(error);
@@ -69,7 +69,7 @@ uploadBooksScene.action("back", ctx => {
   ctx.scene.reenter();
 });
 
-function pasrseXLSX(fileData) {
+function parseXLSX(fileData) {
   const toTitleCase = s => s.substr(0, 1).toUpperCase() + s.substr(1).toLowerCase();
   const removeBreaks = s => s.replace(/(\r\n|\n|\r)/gm, " ");
 
