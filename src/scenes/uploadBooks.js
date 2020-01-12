@@ -102,7 +102,7 @@ function parseXLSX(fileData) {
   const formatted = [];
   data.forEach(book => {
     if (book[0]) category = book[0];
-    if (!book[1] || !book[2]) return;
+    if (!book[1] || !book[2] || category === "Тема") return;
 
     formatted.push({
       name: removeBreaks(book[1]),
