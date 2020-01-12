@@ -9,6 +9,7 @@ const { unavailableBooksScene } = require("./scenes/unavailableBooks");
 const { usersScene } = require("./scenes/users");
 const { addBookScene } = require("./scenes/addBook");
 const { editBookScene } = require("./scenes/editBook");
+const { uploadBooksScene } = require("./scenes/uploadBooks");
 const scenes = [
   menuScene,
   searchBookScene,
@@ -17,7 +18,8 @@ const scenes = [
   unavailableBooksScene,
   usersScene,
   addBookScene,
-  editBookScene
+  editBookScene,
+  uploadBooksScene
 ];
 const stage = new Stage(scenes);
 

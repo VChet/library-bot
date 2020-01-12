@@ -25,6 +25,9 @@ menuScene.enter(ctx => {
         [
           m.callbackButton("⚠️ Пользователи", "/users", hide),
           m.callbackButton("⚠️ Добавить книгу", "/add", hide)
+        ],
+        [
+          m.callbackButton("⚠️ Загрузить книги файлом", "/upload", hide)
         ]
       ];
       return m.inlineKeyboard(buttons);
@@ -54,6 +57,10 @@ menuScene.action("/users", isAdmin, ctx => {
 
 menuScene.action("/add", isAdmin, ctx => {
   ctx.scene.enter("addBookScene");
+});
+
+menuScene.action("/upload", isAdmin, ctx => {
+  ctx.scene.enter("uploadBooksScene");
 });
 
 module.exports = {
