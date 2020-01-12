@@ -2,14 +2,17 @@ const Telegraf = require("telegraf");
 const session = require("telegraf/session");
 
 const config = require("./config");
-const { socksAgent } = require("./src/components/socksAgent");
 const { connectToDB } = require("./database");
 const { startSceneHandler } = require("./src/sceneHandler");
 const { middleware } = require("./src/middleware");
 
 connectToDB();
 
-const proxy = config.useProxy ? { telegram: { agent: socksAgent } } : {};
+let proxy = {};
+if (config.useProxy) {
+  const { socksAgent } = require("./src/components/socksAgent");
+  proxy = { telegram: { agent: socksAgent } };
+}
 
 const bot = new Telegraf(config.token, proxy);
 bot.use(session());

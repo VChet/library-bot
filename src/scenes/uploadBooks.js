@@ -5,7 +5,6 @@ const axios = require("axios");
 const XLSX = require("xlsx");
 
 const config = require("../../config");
-const { socksAgent } = require("../components/socksAgent");
 const { Book } = require("../../models/book");
 
 const uploadBooksScene = new Scene("uploadBooksScene");
@@ -27,7 +26,11 @@ uploadBooksScene.on("document", ctx => {
   if (ctx.message.document.mime_type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
     ctx.telegram.getFile(ctx.message.document.file_id)
       .then(response => {
-        const httpsAgent = config.useProxy ? socksAgent : {};
+        let httpsAgent;
+        if (config.useProxy) {
+          const { socksAgent } = require("../components/socksAgent");
+          httpsAgent = socksAgent;
+        }
         axios({
           url: `https://api.telegram.org/file/bot${config.token}/${response.file_path}`,
           method: "GET",
