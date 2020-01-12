@@ -36,12 +36,12 @@ addBookScene.on("message", ctx => {
 
   ctx.scene.session.addBook.bookData = bookData;
 
-  Book.findOne({ name: bookData.name }).lean().exec((error, book) => {
+  Book.findOne({ author: bookData.author, name: bookData.name }).lean().exec((error, book) => {
     if (error) console.log(error);
 
     if (book) {
       return ctx.reply(
-        `В библиотеке уже есть книга с названием "${book.name}"\nВы можете добавить к названию номер экземпляра`,
+        `В библиотеке уже есть книга автора "${book.author}" с названием "${book.name}"\nЕсли это еще один экземпляр - укажите это в названии`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
             m.callbackButton("Попробовать снова", "back"),

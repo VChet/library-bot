@@ -40,19 +40,23 @@ uploadBooksScene.on("document", ctx => {
           .then(file => {
             const books = parseXLSX(file.data);
 
-            Book.insertMany(books, (error, book) => {
-              if (error) console.log(error);
+            Book.insertMany(
+              books,
+              { ordered: false },
+              (error) => {
+                if (error) console.log(error);
 
-              ctx.reply(
-                `Книги из файла "${ctx.message.document.file_name}" добавлены!`,
-                Extra.HTML().markup(m =>
-                  m.inlineKeyboard([
-                    m.callbackButton("Добавить ещё", "back"),
-                    m.callbackButton("В меню", "menu"),
-                  ])
-                )
-              );
-            });
+                ctx.reply(
+                  `Книги из файла "${ctx.message.document.file_name}" добавлены!`,
+                  Extra.HTML().markup(m =>
+                    m.inlineKeyboard([
+                      m.callbackButton("Добавить ещё", "back"),
+                      m.callbackButton("В меню", "menu"),
+                    ])
+                  )
+                );
+              }
+            );
           })
           .catch(error => {
             console.log(error);
@@ -86,15 +90,16 @@ function parseXLSX(fileData) {
   const data = XLSX.utils.sheet_to_json(ws, {header:1});
 
   let category;
-
-  const formatted = data.map(book => {
+  const formatted = [];
+  data.forEach(book => {
     if (book[0]) category = book[0];
     if (!book[1] || !book[2]) return;
-    return {
+
+    formatted.push({
       name: removeBreaks(book[1]),
       author: removeBreaks(book[2]),
       category: removeBreaks(toTitleCase(category))
-    };
+    });
   });
 
   return formatted;
