@@ -49,11 +49,11 @@ searchBookScene.on("message", ctx => {
     .catch(error => replyWithError(ctx, error));
 });
 
-searchBookScene.action(/get (.+)/, (ctx) => {
+searchBookScene.action(/get (.+)/, async (ctx) => {
   const bookId = ctx.match[1];
   const bookData = ctx.scene.session.results.find(book => book._id.toString() === bookId.toString());
   ctx.scene.session.selected = bookData;
-  if (bookData.user) {
+  if (bookData.user || bookData.taken_by) {
     if (bookData.user.toString() === ctx.session.user._id.toString()) {
       let response = `Вернуть "${bookData.author} — ${bookData.name}"?`;
       if (bookData.category) response += `\nРаздел "${bookData.category}"`;
@@ -75,19 +75,24 @@ searchBookScene.action(/get (.+)/, (ctx) => {
       );
     }
 
-    User.getById(bookData.user)
-      .then(user => {
-        return ctx.editMessageText(
-          `${bookData.name} сейчас у @${user.username}`,
-          Extra.HTML().markup(m =>
-            m.inlineKeyboard([
-              m.callbackButton("Искать ещё", "findAgain"),
-              m.callbackButton("В меню", "menu")
-            ])
-          )
-        );
-      })
-      .catch(error => replyWithError(ctx, error));
+    let user;
+    if (bookData.user) {
+      const userData = await User.getById(bookData.user);
+      user = `@${userData.username}`;
+    } else {
+      user = bookData.taken_by;
+    }
+
+    return ctx.editMessageText(
+      `${bookData.name} сейчас у ${user}`,
+      Extra.HTML().markup(m =>
+        m.inlineKeyboard([
+          m.callbackButton("Искать ещё", "findAgain"),
+          m.callbackButton("В меню", "menu"),
+          m.callbackButton("⚠️ Книга возвращена", "returnTaken", hideButton(ctx) && bookData.taken_by)
+        ])
+      )
+    );
   } else {
     ctx.editMessageText(
       `Выбранная книга: ${bookData.author} — ${bookData.name}.`,
@@ -124,7 +129,22 @@ searchBookScene.action("return", ctx => {
     .catch(error => replyWithError(ctx, error));
 });
 
-// Refactor: same as in availableBooks, different back text
+searchBookScene.action("returnTaken", ctx => {
+  Book.clearTaken(ctx.scene.session.selected._id)
+    .then(book => {
+      ctx.editMessageText(
+        `Книга "${book.name}" возвращена в библиотеку`,
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([
+            m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("В меню", "menu")
+          ])
+        )
+      );
+    })
+    .catch(error => replyWithError(ctx, error));
+});
+
 searchBookScene.action("take", ctx => {
   Book.changeUser(ctx.scene.session.selected._id, ctx.session.user._id)
     .then(book => {

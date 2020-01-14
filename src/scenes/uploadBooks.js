@@ -101,7 +101,8 @@ function parseXLSX(fileData) {
     formatted.push({
       name: removeBreaks(book[1]),
       author: removeBreaks(book[2]),
-      category: removeBreaks(toTitleCase(category))
+      category: removeBreaks(toTitleCase(category)),
+      taken_by: book[3]
     });
   });
 

@@ -13,8 +13,13 @@ unavailableBooksScene.enter(ctx => {
   Book.getUnavailable()
     .then(books => {
       ctx.scene.session.results = books;
+      const booksList = books.map(book => {
+        const user = book.user ?
+          `@${book.user.username}` :
+          book.taken_by;
+        return `${book.author} — ${book.name} (${user})`;
+      }).join("\n");
 
-      const booksList = books.map(book => `${book.author} — ${book.name} (@${book.user.username})`).join("\n");
       const response = books.length ?
         `Сейчас на руках ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}:\n${booksList}` :
         "Все книги в библиотеке!";

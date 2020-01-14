@@ -6,7 +6,7 @@ const { declOfNum } = require("../helpers");
 const booksKeyboardScenes = ["availableBooksScene", "returnBookScene", "searchBookScene"];
 const usersKeyboardScenes = ["usersScene"];
 
-const isTaken = book => book.user ? "❌" : "";
+const isTaken = book => book.user || book.taken_by ? "❌" : "";
 
 const paginator = {
   page: 1,

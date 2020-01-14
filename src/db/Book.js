@@ -8,13 +8,23 @@ exports.Book = {
     });
   }),
   getAvailable: () => new Promise((resolve, reject) => {
-    Book.find({ user: null, is_archived: false }).lean().exec((error, books) => {
+    Book.find({
+      user: null,
+      taken_by: "",
+      is_archived: false
+    }).lean().exec((error, books) => {
       if (error) reject(error);
       resolve(books);
     });
   }),
   getUnavailable: () => new Promise((resolve, reject) => {
-    Book.find({ user: { $ne: null }, is_archived: false }).populate("user").lean().exec((error, books) => {
+    Book.find({
+      or: [
+        { user: { $ne: null } },
+        { taken_by: { $ne: "" } }
+      ],
+      is_archived: false
+    }).populate("user").lean().exec((error, books) => {
       if (error) reject(error);
       resolve(books);
     });
@@ -66,6 +76,17 @@ exports.Book = {
         if (error) reject(error);
         resolve(book);
       });
+  }),
+  clearTaken: (bookId) => new Promise((resolve, reject) => {
+    Book.findByIdAndUpdate(
+      bookId,
+      { $set: { taken_by: "" } },
+      { new: true },
+      (error, book) => {
+        if (error) reject(error);
+        resolve(book);
+      }
+    );
   }),
   archive: (bookId) => new Promise((resolve, reject) => {
     Book.findByIdAndUpdate(

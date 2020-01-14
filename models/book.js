@@ -20,6 +20,10 @@ const schema = new Schema({
     ref: "User",
     default: null
   },
+  // The book was taken not through the bot
+  taken_by: {
+    type: String
+  },
   is_archived: {
     type: Boolean,
     default: false
