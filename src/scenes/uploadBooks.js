@@ -47,14 +47,15 @@ uploadBooksScene.on("document", ctx => {
               { ordered: false },
               (output) => {
                 let error;
-                if (output.writeErrors.length) {
+                if (output && output.writeErrors.length) {
                   console.error(output.writeErrors);
                   error = `Не было добавлено ${output.writeErrors.length} ${declOfNum(output.writeErrors.length, ["книга", "книги", "книг"])}`;
                 }
 
-                const count = output.result.result.nInserted;
+                const count = output && output.result.result.nInserted;
 
-                let response = `Из файла "${ctx.message.document.file_name}" добавлено ${count} ${declOfNum(count, ["книга", "книги", "книг"])}`;
+                let response = "";
+                if (count) response += `Из файла "${ctx.message.document.file_name}" добавлено ${count} ${declOfNum(count, ["книга", "книги", "книг"])}`;
                 if (error) response += "\n" + error;
 
                 ctx.reply(
