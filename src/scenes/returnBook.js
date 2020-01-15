@@ -1,7 +1,7 @@
 const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
-const { Book } = require("../../models/book");
+const { Book } = require("../db/Book");
 const { replyWithError } = require("../components/error");
 const { bookPaginator } = require("../components/bookPaginator");
 const { declOfNum } = require("../helpers");
@@ -14,24 +14,23 @@ returnBookScene.enter(ctx => {
     selected: {}
   };
 
-  Book.find({ user: ctx.session.user._id }).lean().exec((error, books) => {
-    if (error) replyWithError(ctx, error);
-
-    if (books.length) {
-      ctx.scene.session.userBooks = books;
-      ctx.editMessageText(
-        `У вас ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}. Выберите книгу, которую хотите вернуть:`,
-        bookPaginator.keyboard(books)
-      );
-    } else {
+  Book.getByUser(ctx.session.user._id)
+    .then(books => {
+      if (books.length) {
+        ctx.scene.session.userBooks = books;
+        return ctx.editMessageText(
+          `У вас ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}. Выберите книгу, которую хотите вернуть:`,
+          bookPaginator.keyboard(books)
+        );
+      }
       ctx.editMessageText(
         "У вас нет невозвращенных книг",
         Extra.HTML().markup(m =>
           m.inlineKeyboard([m.callbackButton("В меню", "menu")])
         )
       );
-    }
-  });
+    })
+    .catch(error => replyWithError(ctx, error));
 });
 
 returnBookScene.action(/get (.+)/, (ctx) => {
@@ -56,13 +55,8 @@ returnBookScene.action(/get (.+)/, (ctx) => {
 });
 
 returnBookScene.action("return", ctx => {
-  Book.findByIdAndUpdate(
-    ctx.scene.session.selected._id,
-    { $set: { user: null } },
-    { new: true },
-    (error, book) => {
-      if (error) replyWithError(ctx, error);
-
+  Book.clearUser(ctx.scene.session.selected._id)
+    .then(book => {
       ctx.editMessageText(
         `Вы вернули книгу "${book.author} — ${book.name}". Спасибо!`,
         Extra.HTML().markup(m =>
@@ -72,8 +66,8 @@ returnBookScene.action("return", ctx => {
           ])
         )
       );
-    }
-  );
+    })
+    .catch(error => replyWithError(ctx, error));
 });
 
 returnBookScene.action("back", ctx => {

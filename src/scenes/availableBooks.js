@@ -1,7 +1,7 @@
 const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
-const { Book } = require("../../models/book");
+const { Book } = require("../db/Book");
 const { replyWithError } = require("../components/error");
 const { paginator } = require("../components/paginator")
 const { declOfNum } = require("../helpers");
@@ -13,24 +13,24 @@ availableBooksScene.enter(ctx => {
     results: {}
   };
 
-  Book.find({ user: null, is_archived: false }).lean().exec((error, books) => {
-    if (error) replyWithError(ctx, error);
+  Book.getAvailable()
+    .then(books => {
+      ctx.scene.session.results = books;
+      if (books.length) {
+        return ctx.editMessageText(
+          `В библиотеке ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}`,
+          bookPaginator.keyboard(books)
+        );
+      }
 
-    ctx.scene.session.results = books;
-    if (books.length) {
-      ctx.editMessageText(
-        `В библиотеке ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}`,
-        paginator.keyboard(ctx, books)
-      );
-    } else {
       ctx.editMessageText(
         "В библиотеке не осталось книг",
         Extra.HTML().markup(m =>
           m.inlineKeyboard([m.callbackButton("В меню", "menu")])
         )
       );
-    }
-  });
+    })
+    .catch(error => replyWithError(ctx, error));
 });
 
 availableBooksScene.action(/get (.+)/, (ctx) => {
@@ -53,13 +53,8 @@ availableBooksScene.action(/get (.+)/, (ctx) => {
 });
 
 availableBooksScene.action("take", ctx => {
-  Book.findByIdAndUpdate(
-    ctx.scene.session.selected._id,
-    { $set: { user: ctx.session.user._id } },
-    { new: true },
-    (error, book) => {
-      if (error) replyWithError(ctx, error);
-
+  Book.changeUser(ctx.scene.session.selected._id, ctx.session.user._id)
+    .then(book => {
       ctx.editMessageText(
         "Теперь книга закреплена за вами!",
         Extra.HTML().markup(m =>
@@ -69,8 +64,8 @@ availableBooksScene.action("take", ctx => {
           ])
         )
       );
-    }
-  );
+    })
+    .catch(error => replyWithError(ctx, error));
 });
 
 availableBooksScene.action("back", ctx => {

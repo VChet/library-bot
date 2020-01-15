@@ -1,7 +1,7 @@
 const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
-const { Book } = require("../../models/book");
+const { Book } = require("../db/Book");
 const { replyWithError } = require("../components/error");
 
 const editBookScene = new Scene("editBookScene");
@@ -58,21 +58,16 @@ editBookScene.on("message", ctx => {
 
 editBookScene.action("edit", ctx => {
   const bookData = ctx.scene.session.bookData;
-  Book.findByIdAndUpdate(
-    bookData._id,
-    { $set: bookData },
-    { new: true },
-    (error, book) => {
-      if (error) replyWithError(ctx, error);
-
+  Book.changeData(bookData)
+    .then(book => {
       ctx.editMessageText(
-        "Данные книги обновлены!",
+        `Книга "${book.name}" обновлена`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([m.callbackButton("В меню", "menu")])
         )
       );
-    }
-  );
+    })
+    .catch(error => replyWithError(ctx, error));
 });
 
 editBookScene.action("menu", ctx => {

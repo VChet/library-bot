@@ -1,7 +1,7 @@
 const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
-const { Book } = require("../../models/book");
+const { Book } = require("../db/Book");
 const { User } = require("../../models/user");
 const { replyWithError } = require("../components/error");
 const { bookPaginator } = require("../components/bookPaginator");
@@ -22,21 +22,19 @@ searchBookScene.enter(ctx => {
 
 searchBookScene.on("message", ctx => {
   ctx.scene.session = {
-    query: "",
+    query: ctx.message.text,
     results: [],
     selected: {}
   };
 
-  ctx.scene.session.query = ctx.message.text;
-
-  Book.find({ $text: { $search: ctx.message.text }, is_archived: false }).lean().exec((error, books) => {
-    if (error) replyWithError(ctx, error);
-    if (books.length) {
-      ctx.reply(
-        `Найдено ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}:`,
-        bookPaginator.keyboard(books)
-      );
-    } else {
+  Book.getByQuery(ctx.message.text)
+    .then(books => {
+      if (books.length) {
+        return ctx.reply(
+          `Найдено ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}:`,
+          bookPaginator.keyboard(books)
+        );
+      }
       ctx.reply(
         "Ничего не найдено",
         Extra.HTML().markup(m =>
@@ -46,8 +44,8 @@ searchBookScene.on("message", ctx => {
           ])
         )
       );
-    }
-  });
+    })
+    .catch(error => replyWithError(ctx, error));
 });
 
 searchBookScene.action(/get (.+)/, (ctx) => {
@@ -110,13 +108,8 @@ searchBookScene.action(/get (.+)/, (ctx) => {
 });
 
 searchBookScene.action("return", ctx => {
-  Book.findByIdAndUpdate(
-    ctx.scene.session.selected._id,
-    { $set: { user: null } },
-    { new: true },
-    (error, book) => {
-      if (error) replyWithError(ctx, error);
-
+  Book.clearUser(ctx.scene.session.selected._id)
+    .then(book => {
       ctx.editMessageText(
         `Вы вернули книгу "${book.author} — ${book.name}". Спасибо!`,
         Extra.HTML().markup(m =>
@@ -126,18 +119,14 @@ searchBookScene.action("return", ctx => {
           ])
         )
       );
-    }
-  );
+    })
+    .catch(error => replyWithError(ctx, error));
 });
 
+// Refactor: same as in availableBooks, different back text
 searchBookScene.action("take", ctx => {
-  Book.findByIdAndUpdate(
-    ctx.scene.session.selected._id,
-    { $set: { user: ctx.session.user._id } },
-    { new: true },
-    (error, book) => {
-      if (error) replyWithError(ctx, error);
-
+  Book.changeUser(ctx.scene.session.selected._id, ctx.session.user._id)
+    .then(book => {
       ctx.editMessageText(
         `Теперь книга "${book.name}" закреплена за вами!`,
         Extra.HTML().markup(m =>
@@ -147,8 +136,8 @@ searchBookScene.action("take", ctx => {
           ])
         )
       );
-    }
-  );
+    })
+    .catch(error => replyWithError(ctx, error));
 });
 
 searchBookScene.action("archiveCheck", ctx => {
@@ -173,15 +162,10 @@ searchBookScene.action("edit", ctx => {
 });
 
 searchBookScene.action("archive", ctx => {
-  Book.findByIdAndUpdate(
-    ctx.scene.session.selected._id,
-    { $set: { is_archived: true } },
-    { new: true },
-    (error, book) => {
-      if (error) replyWithError(ctx, error);
-
+  Book.archive(ctx.scene.session.selected._id)
+    .then(book => {
       ctx.editMessageText(
-        `Книга "${book.name}" архивирована`,
+        `Книга "${book.name}" добавлена в архив`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
             m.callbackButton("Вернуться в поиск", "findAgain"),
@@ -189,8 +173,8 @@ searchBookScene.action("archive", ctx => {
           ])
         )
       );
-    }
-  );
+    })
+    .catch(error => replyWithError(ctx, error));
 });
 
 searchBookScene.action("findAgain", ctx => {

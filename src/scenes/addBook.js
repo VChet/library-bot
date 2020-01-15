@@ -1,7 +1,7 @@
 const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
-const { Book } = require("../../models/book");
+const { Book } = require("../db/Book");
 const { replyWithError } = require("../components/error");
 
 const addBookScene = new Scene("addBookScene");
@@ -35,48 +35,48 @@ addBookScene.on("message", ctx => {
 
   ctx.scene.session.bookData = bookData;
 
-  Book.findOne({ author: bookData.author, name: bookData.name }).lean().exec((error, book) => {
-    if (error) replyWithError(ctx, error);
+  Book.isExists(bookData.author, bookData.name)
+    .then(book => {
+      if (book) {
+        return ctx.reply(
+          `В библиотеке уже есть книга автора "${book.author}" с названием "${book.name}"\nЕсли это еще один экземпляр - укажите это в названии`,
+          Extra.HTML().markup(m =>
+            m.inlineKeyboard([
+              m.callbackButton("Попробовать снова", "back"),
+              m.callbackButton("В меню", "menu"),
+            ])
+          )
+        );
+      }
 
-    if (book) {
-      return ctx.reply(
-        `В библиотеке уже есть книга автора "${book.author}" с названием "${book.name}"\nЕсли это еще один экземпляр - укажите это в названии`,
+      ctx.reply(
+        `Все верно?\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nКатегория: ${bookData.category}`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
-            m.callbackButton("Попробовать снова", "back"),
-            m.callbackButton("В меню", "menu"),
+            m.callbackButton("Да, добавить", "add"),
+            m.callbackButton("Нет, ввести снова", "back"),
           ])
         )
       );
-    }
-
-    ctx.reply(
-      `Все верно?\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nКатегория: ${bookData.category}`,
-      Extra.HTML().markup(m =>
-        m.inlineKeyboard([
-          m.callbackButton("Да", "add"),
-          m.callbackButton("Нет", "back"),
-        ])
-      )
-    );
-  });
+    })
+    .catch(error => replyWithError(ctx, error));
 });
 
 addBookScene.action("add", ctx => {
   const bookData = ctx.scene.session.bookData;
-  Book.create(bookData, (error, book) => {
-    if (error) replyWithError(ctx, error);
-
-    ctx.editMessageText(
-      "Книга добавлена!",
-      Extra.HTML().markup(m =>
-        m.inlineKeyboard([
-          m.callbackButton("Добавить ещё", "back"),
-          m.callbackButton("В меню", "menu"),
-        ])
-      )
-    );
-  });
+  Book.addOne(bookData)
+    .then(book => {
+      ctx.editMessageText(
+        `Книга "${book.name}" добавлена!`,
+        Extra.HTML().markup(m =>
+          m.inlineKeyboard([
+            m.callbackButton("Добавить ещё", "back"),
+            m.callbackButton("В меню", "menu"),
+          ])
+        )
+      );
+    })
+    .catch(error => replyWithError(ctx, error));
 });
 
 addBookScene.action("menu", ctx => {
