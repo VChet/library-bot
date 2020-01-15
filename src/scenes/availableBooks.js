@@ -3,7 +3,7 @@ const { Extra } = require("telegraf");
 
 const { Book } = require("../../models/book");
 const { replyWithError } = require("../components/error");
-const { bookPaginator } = require("../components/bookPaginator");
+const { paginator } = require("../components/paginator")
 const { declOfNum } = require("../helpers");
 
 const availableBooksScene = new Scene("availableBooksScene");
@@ -20,7 +20,7 @@ availableBooksScene.enter(ctx => {
     if (books.length) {
       ctx.editMessageText(
         `В библиотеке ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}`,
-        bookPaginator.keyboard(books)
+        paginator.keyboard(ctx, books)
       );
     } else {
       ctx.editMessageText(
@@ -82,7 +82,7 @@ availableBooksScene.action("menu", ctx => {
   return ctx.scene.enter("menuScene");
 });
 
-availableBooksScene.action(/changePage (.+)/, bookPaginator.changePageAction);
+availableBooksScene.action(/changePage (.+)/, ctx => paginator.changePageAction(ctx, ctx.scene.session.results));
 
 module.exports = {
   availableBooksScene
