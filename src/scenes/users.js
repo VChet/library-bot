@@ -2,7 +2,7 @@ const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
 const { declOfNum } = require("../helpers");
-const { User } = require("../../models/user");
+const { User } = require("../db/User");
 const { paginator } = require("../components/paginator");
 const { replyWithError } = require("../components/error");
 
@@ -17,15 +17,15 @@ usersScene.enter(ctx => {
     selected: {}
   };
 
-  User.find().lean().exec((error, users) => {
-    if (error) replyWithError(ctx, error);
-
-    ctx.scene.session.results = users;
-    ctx.editMessageText(
-      `В базе ${users.length} ${declOfNum(users.length, ["пользователь", "пользователя", "пользователей"])}`,
-      paginator.keyboard(ctx, users)
-    );
-  });
+  User.getAll()
+    .then(users => {
+      ctx.scene.session.results = users;
+      ctx.editMessageText(
+        `В базе ${users.length} ${declOfNum(users.length, ["пользователь", "пользователя", "пользователей"])}`,
+        paginator.keyboard(ctx, users)
+      );
+    })
+    .catch(error => replyWithError(ctx, error));
 });
 
 usersScene.action(/get (.+)/, (ctx) => {
@@ -49,20 +49,15 @@ usersScene.action(/get (.+)/, (ctx) => {
 });
 
 usersScene.action("promote", ctx => {
-  let newRole;
   const selectedUser = ctx.scene.session.selected;
+  let newRole;
   if (selectedUser.role === "Guest") {
     newRole = "User";
   } else if (selectedUser.role === "User") {
     newRole = "Admin";
   }
-  User.findByIdAndUpdate(
-    selectedUser._id,
-    { $set: { role: newRole } },
-    { new: true },
-    (error, user) => {
-      if (error) replyWithError(ctx, error);
-
+  User.changeRole(selectedUser._id, newRole)
+    .then(user => {
       ctx.editMessageText(
         `Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`,
         Extra.HTML().markup(m =>
@@ -72,25 +67,20 @@ usersScene.action("promote", ctx => {
           ])
         )
       );
-    }
-  );
+    })
+    .catch(error => replyWithError(ctx, error));
 });
 
 usersScene.action("demote", ctx => {
-  let newRole;
   const selectedUser = ctx.scene.session.selected;
+  let newRole;
   if (selectedUser.role === "Admin") {
     newRole = "User";
   } else if (selectedUser.role === "User") {
     newRole = "Guest";
   }
-  User.findByIdAndUpdate(
-    selectedUser._id,
-    { $set: { role: newRole } },
-    { new: true },
-    (error, user) => {
-      if (error) replyWithError(ctx, error);
-
+  User.changeRole(selectedUser._id, newRole)
+    .then(user => {
       ctx.editMessageText(
         `Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`,
         Extra.HTML().markup(m =>
@@ -100,8 +90,8 @@ usersScene.action("demote", ctx => {
           ])
         )
       );
-    }
-  );
+    })
+    .catch(error => replyWithError(ctx, error));
 });
 
 usersScene.action("back", ctx => {

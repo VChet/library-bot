@@ -2,7 +2,7 @@ const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
 const { Book } = require("../db/Book");
-const { User } = require("../../models/user");
+const { User } = require("../db/User");
 const { replyWithError } = require("../components/error");
 const { bookPaginator } = require("../components/bookPaginator");
 const { declOfNum } = require("../helpers");
@@ -74,21 +74,21 @@ searchBookScene.action(/get (.+)/, (ctx) => {
       );
     }
 
-    User.findById(bookData.user).lean().exec((error, user) => {
-      if (error) replyWithError(ctx, error);
-
-      return ctx.editMessageText(
-        `${bookData.name} сейчас у @${user.username}`,
-        Extra.HTML().markup(m =>
-          m.inlineKeyboard([
-            m.callbackButton("Искать ещё", "findAgain"),
-            m.callbackButton("В меню", "menu")
-          ])
-        )
-      );
-    });
+    User.getById(bookData.user)
+      .then(user => {
+        return ctx.editMessageText(
+          `${bookData.name} сейчас у @${user.username}`,
+          Extra.HTML().markup(m =>
+            m.inlineKeyboard([
+              m.callbackButton("Искать ещё", "findAgain"),
+              m.callbackButton("В меню", "menu")
+            ])
+          )
+        );
+      })
+      .catch(error => replyWithError(ctx, error));
   } else {
-    return ctx.editMessageText(
+    ctx.editMessageText(
       `Выбранная книга: ${bookData.author} — ${bookData.name}.`,
       Extra.HTML().markup(m =>
         m.inlineKeyboard([
