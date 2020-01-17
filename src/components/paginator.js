@@ -76,7 +76,7 @@ const paginator = {
         newMessage = `В библиотеке ${items.length} ${declOfNum(items.length, ["книга", "книги", "книг"])} (показаны с ${firstItemsBorder} по ${secondItemsBorder})`;
         break;
       case ("usersScene"):
-        newMessage = `В базе ${items.length} ${declOfNum(items.length, ["пользователь", "пользователя", "пользователей"])} (показаны с ${firstUsersBorder} по ${secondUsersBorder})`;
+        newMessage = `В базе ${items.length} ${declOfNum(items.length, ["пользователь", "пользователя", "пользователей"])} (показаны с ${firstItemsBorder} по ${secondItemsBorder})`;
         break;
     }
 
