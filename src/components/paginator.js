@@ -47,8 +47,8 @@ const paginator = {
           ]);
         } else if (currentPage * 10 >= itemsLength) {
           keyboard.push([
-            keyboards.menuButton(),
-            m.callbackButton("Назад", "changePage previous")
+            m.callbackButton("Назад", "changePage previous"),
+            keyboards.menuButton()
           ]);
         }
       } else {
