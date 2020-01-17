@@ -3,7 +3,7 @@ const { Extra } = require("telegraf");
 
 const { Book } = require("../db/Book");
 const { replyWithError } = require("../components/error");
-const { paginator } = require("../components/paginator")
+const { paginator } = require("../components/paginator");
 const { declOfNum } = require("../helpers");
 
 const availableBooksScene = new Scene("availableBooksScene");
