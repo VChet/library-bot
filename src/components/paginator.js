@@ -71,15 +71,21 @@ const paginator = {
     const secondItemsBorder = currentPage * 10 > items.length ? items.length : currentPage * 10;
 
     let newMessage = "";
-
     switch (ctx.scene.session.current) {
       case ("availableBooksScene"):
-        newMessage = `В библиотеке ${items.length} ${declOfNum(items.length, ["книга", "книги", "книг"])} (показаны с ${firstItemsBorder} по ${secondItemsBorder})`;
+        newMessage = `В библиотеке ${items.length} ${declOfNum(items.length, ["книга", "книги", "книг"])}`;
+        break;
+      case ("searchBookScene"):
+        newMessage = `Найдено ${items.length} ${declOfNum(items.length, ["книга", "книги", "книг"])}`;
+        break;
+      case ("returnBookScene"):
+        newMessage = `У вас ${items.length} ${declOfNum(items.length, ["книга", "книги", "книг"])}. Выберите книгу, которую хотите вернуть`;
         break;
       case ("usersScene"):
-        newMessage = `В базе ${items.length} ${declOfNum(items.length, ["пользователь", "пользователя", "пользователей"])} (показаны с ${firstItemsBorder} по ${secondItemsBorder})`;
+        newMessage = `В базе ${items.length} ${declOfNum(items.length, ["пользователь", "пользователя", "пользователей"])}`;
         break;
     }
+    newMessage += `\n(показаны с ${firstItemsBorder} по ${secondItemsBorder})`;
 
     return ctx.editMessageText(newMessage, paginator.keyboard(ctx, items));
   }

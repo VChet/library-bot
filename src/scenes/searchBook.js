@@ -4,7 +4,7 @@ const { Extra } = require("telegraf");
 const { Book } = require("../db/Book");
 const { User } = require("../db/User");
 const { replyWithError } = require("../components/error");
-const { bookPaginator } = require("../components/bookPaginator");
+const { paginator } = require("../components/paginator");
 const { declOfNum } = require("../helpers");
 
 const searchBookScene = new Scene("searchBookScene");
@@ -30,9 +30,10 @@ searchBookScene.on("message", ctx => {
   Book.getByQuery(ctx.message.text)
     .then(books => {
       if (books.length) {
+        ctx.scene.session.results = books;
         return ctx.reply(
           `Найдено ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}:`,
-          bookPaginator.keyboard(books)
+          paginator.keyboard(ctx, books)
         );
       }
       ctx.reply(
@@ -186,7 +187,7 @@ searchBookScene.action("menu", ctx => {
   return ctx.scene.enter("menuScene");
 });
 
-searchBookScene.action(/changePage (.+)/, bookPaginator.changePageAction);
+searchBookScene.action(/changePage (.+)/, paginator.changePageAction);
 
 module.exports = {
   searchBookScene
