@@ -2,11 +2,12 @@ const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
 const { Book } = require("../db/Book");
+const { Category } = require("../db/Category");
 const { replyWithError } = require("../components/error");
 
 const editBookScene = new Scene("editBookScene");
 
-editBookScene.enter(ctx => {
+editBookScene.enter(async (ctx) => {
   if (!ctx.session.selectedBook) {
     ctx.editMessageText(
       "Что-то пошло не так. Книга не была выбрана",
@@ -16,10 +17,11 @@ editBookScene.enter(ctx => {
     );
   }
   ctx.scene.session.bookData = ctx.session.selectedBook;
-
   const bookData = ctx.scene.session.bookData;
+
+  const category = await Category.getById(bookData.category);
   let response = "Введите данные о книге в формате \nАвтор\nНазвание\nКатегория\n\n";
-  response += `Текущая книга: \nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nКатегория: ${bookData.category}`;
+  response += `Текущая книга: \nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nКатегория: ${category.name}`;
 
   ctx.editMessageText(
     response,
@@ -29,24 +31,34 @@ editBookScene.enter(ctx => {
   );
 });
 
-editBookScene.on("message", ctx => {
+editBookScene.on("message", async (ctx) => {
   const arr = ctx.message.text.split("\n");
   if (arr.length !== 3) {
     ctx.reply(
-      "Что-то не так, попробуйте снова",
+      "Что-то не так. Попробуйте снова",
       Extra.HTML().markup(m =>
-        m.inlineKeyboard([m.callbackButton("В меню", "menu")])
+        m.inlineKeyboard([m.callbackButton("Отмена", "menu")])
+      )
+    );
+  }
+
+  const category = await Category.getByName(arr[2]);
+  if (!category) {
+    return ctx.reply(
+      `Категории "${arr[2]}" нет. Попробуйте снова`,
+      Extra.HTML().markup(m =>
+        m.inlineKeyboard([m.callbackButton("Отмена", "menu")])
       )
     );
   }
 
   ctx.scene.session.bookData.author = arr[0];
   ctx.scene.session.bookData.name = arr[1];
-  ctx.scene.session.bookData.category = arr[2];
+  ctx.scene.session.bookData.category = category;
   const bookData = ctx.scene.session.bookData;
 
   ctx.reply(
-    `Все верно?\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nКатегория: ${bookData.category}`,
+    `Все верно?\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nКатегория: ${bookData.category.name}`,
     Extra.HTML().markup(m =>
       m.inlineKeyboard([
         m.callbackButton("Да", "edit"),

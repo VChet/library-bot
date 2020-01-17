@@ -2,6 +2,7 @@ const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
 const { Book } = require("../db/Book");
+const { Category } = require("../db/Category");
 const { replyWithError } = require("../components/error");
 const { paginator } = require("../components/paginator");
 const { declOfNum } = require("../helpers");
@@ -33,12 +34,13 @@ returnBookScene.enter(ctx => {
     .catch(error => replyWithError(ctx, error));
 });
 
-returnBookScene.action(/get (.+)/, (ctx) => {
+returnBookScene.action(/get (.+)/, async (ctx) => {
   const bookId = ctx.match[1];
   const bookData = ctx.scene.session.userBooks.find(book => book._id.toString() === bookId.toString());
   ctx.scene.session.selected = bookData;
-  let response = `Вернуть "${bookData.author} — ${bookData.name}"?`;
-  if (bookData.category) response += `\nРаздел "${bookData.category}"`;
+
+  const category = await Category.getById(bookData.category);
+  const response = `Вернуть "${bookData.author} — ${bookData.name}"?\nРаздел "${category.name}"`;
   return ctx.editMessageText(
     response,
     Extra.HTML().markup(m =>
@@ -59,7 +61,7 @@ returnBookScene.action("return", ctx => {
   Book.clearUser(bookId)
     .then(book => {
       ctx.editMessageText(
-        `Вы вернули книгу "${book.author} — ${book.name}". Спасибо!`,
+        `Вы вернули книгу "${book.name}". Спасибо!`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
             m.callbackButton("Назад к списку", "back"),

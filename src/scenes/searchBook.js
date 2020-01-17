@@ -3,6 +3,7 @@ const { Extra } = require("telegraf");
 
 const { Book } = require("../db/Book");
 const { User } = require("../db/User");
+const { Category } = require("../db/Category");
 const { replyWithError } = require("../components/error");
 const { paginator } = require("../components/paginator");
 const { declOfNum } = require("../helpers");
@@ -55,8 +56,8 @@ searchBookScene.action(/get (.+)/, async (ctx) => {
   ctx.scene.session.selected = bookData;
   if (bookData.user || bookData.taken_by) {
     if (bookData.user && bookData.user.toString() === ctx.session.user._id.toString()) {
-      let response = `Вернуть "${bookData.author} — ${bookData.name}"?`;
-      if (bookData.category) response += `\nРаздел "${bookData.category}"`;
+      const category = await Category.getById(bookData.category);
+      const response = `Вернуть "${bookData.author} — ${bookData.name}"?\nРаздел "${category.name}"`;
       return ctx.editMessageText(
         response,
         Extra.HTML().markup(m =>

@@ -2,6 +2,7 @@ const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
 const { Book } = require("../db/Book");
+const { Category } = require("../db/Category");
 const { replyWithError } = require("../components/error");
 
 const addBookScene = new Scene("addBookScene");
@@ -15,27 +16,37 @@ addBookScene.enter(ctx => {
   );
 });
 
-addBookScene.on("message", ctx => {
+addBookScene.on("message", async (ctx) => {
   ctx.scene.session.bookData = {};
 
   const arr = ctx.message.text.split("\n");
   if (arr.length !== 3) {
     return ctx.reply(
-      "Что-то не так, попробуйте снова",
+      "Что-то не так. Попробуйте снова",
       Extra.HTML().markup(m =>
         m.inlineKeyboard([m.callbackButton("Отмена", "menu")])
       )
     );
   }
+
+  const category = await Category.getByName(arr[2]);
+  if (!category) {
+    return ctx.reply(
+      `Категории "${arr[2]}" нет. Попробуйте снова`,
+      Extra.HTML().markup(m =>
+        m.inlineKeyboard([m.callbackButton("Отмена", "menu")])
+      )
+    );
+  }
+
   const bookData = {
     author: arr[0],
     name: arr[1],
-    category: arr[2]
+    category
   };
-
   ctx.scene.session.bookData = bookData;
 
-  Book.isExists(bookData.author, bookData.name)
+  Book.getByName(bookData.author, bookData.name)
     .then(book => {
       if (book) {
         return ctx.reply(
@@ -50,7 +61,7 @@ addBookScene.on("message", ctx => {
       }
 
       ctx.reply(
-        `Все верно?\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nКатегория: ${bookData.category}`,
+        `Все верно?\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nКатегория: ${bookData.category.name}`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
             m.callbackButton("Да, добавить", "add"),
