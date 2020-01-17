@@ -19,7 +19,7 @@ availableBooksScene.enter(ctx => {
       if (books.length) {
         return ctx.editMessageText(
           `В библиотеке ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}`,
-          bookPaginator.keyboard(books)
+          paginator.keyboard(ctx, books)
         );
       }
 
@@ -77,7 +77,7 @@ availableBooksScene.action("menu", ctx => {
   return ctx.scene.enter("menuScene");
 });
 
-availableBooksScene.action(/changePage (.+)/, ctx => paginator.changePageAction(ctx, ctx.scene.session.results));
+availableBooksScene.action(/changePage (.+)/, paginator.changePageAction);
 
 module.exports = {
   availableBooksScene

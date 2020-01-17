@@ -12,7 +12,6 @@ const getRole = (ctx) => ctx.scene.session.selected.role;
 
 usersScene.enter(ctx => {
   ctx.scene.session = {
-    page: 1,
     results: [],
     selected: {}
   };
@@ -103,7 +102,7 @@ usersScene.action("menu", ctx => {
   return ctx.scene.enter("menuScene");
 });
 
-usersScene.action(/changePage (.+)/, ctx => paginator.changePageAction(ctx, ctx.scene.session.results));
+usersScene.action(/changePage (.+)/, paginator.changePageAction);
 
 module.exports = {
   usersScene

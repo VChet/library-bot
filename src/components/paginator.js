@@ -60,7 +60,8 @@ const paginator = {
       return m.inlineKeyboard(keyboard);
     });
   },
-  changePageAction(ctx, items) {
+  changePageAction(ctx) {
+    const items = ctx.scene.session.results;
     ctx.match[1] === "next" ?
       paginator.page++ :
       paginator.page--;
