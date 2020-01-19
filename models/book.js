@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+const { removeBreaks } = require("../src/helpers");
+
 const schema = new Schema({
   name: {
     type: String,
@@ -22,6 +24,12 @@ const schema = new Schema({
     type: Boolean,
     default: false
   }
+});
+
+schema.pre("save", function(next) {
+  this.name = removeBreaks(this.name);
+  this.author = removeBreaks(this.author);
+  next();
 });
 
 // Check combination of name and author fields to be unique
