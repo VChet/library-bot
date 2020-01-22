@@ -55,7 +55,7 @@ usersScene.action("promote", ctx => {
   } else if (selectedUser.role === "User") {
     newRole = "Admin";
   }
-  User.changeRole(selectedUser._id, newRole)
+  User.changeRole(selectedUser, newRole)
     .then(user => {
       ctx.editMessageText(
         `Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`,
@@ -78,7 +78,7 @@ usersScene.action("demote", ctx => {
   } else if (selectedUser.role === "User") {
     newRole = "Guest";
   }
-  User.changeRole(selectedUser._id, newRole)
+  User.changeRole(selectedUser, newRole)
     .then(user => {
       ctx.editMessageText(
         `Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`,
