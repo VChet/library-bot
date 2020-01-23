@@ -1,4 +1,6 @@
+const mongoose = require("mongoose");
 const { Book } = require("../../models/book");
+const { Log } = require("../../models/log");
 
 exports.Book = {
   getAll: () => new Promise((resolve, reject) => {
@@ -57,26 +59,54 @@ exports.Book = {
         resolve(book);
       });
   }),
-  changeUser: (bookId, userId) => new Promise((resolve, reject) => {
-    Book.findByIdAndUpdate(
-      bookId,
-      { $set: { user: userId } },
-      { new: true },
-      (error, book) => {
-        if (error) reject(error);
-        resolve(book);
-      });
-  }),
-  clearUser: (bookId) => new Promise((resolve, reject) => {
-    Book.findByIdAndUpdate(
-      bookId,
-      { $set: { user: null } },
-      { new: true },
-      (error, book) => {
-        if (error) reject(error);
-        resolve(book);
-      });
-  }),
+  changeUser: async (bookId, userId) => {
+    let book;
+    let errorMessage;
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      book = await Book.findByIdAndUpdate(bookId, { $set: { user: userId } });
+      await Log.create({ book: bookId, user: userId });
+
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      errorMessage = error;
+    } finally {
+      session.endSession();
+    }
+    return new Promise((resolve, reject) => {
+      if (errorMessage) reject(errorMessage);
+      resolve(book);
+    });
+  },
+  clearUser: async (bookId) => {
+    let book;
+    let errorMessage;
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      book = await Book.findByIdAndUpdate(
+        bookId,
+        { $set: { user: null } }
+      );
+      await Log.findOneAndUpdate(
+        { book: bookId, user: book.user },
+        { $set: { returned: Date.now() } }
+      );
+
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      errorMessage = error;
+    } finally {
+      session.endSession();
+    }
+    return new Promise((resolve, reject) => {
+      if (errorMessage) reject(errorMessage);
+      resolve(book);
+    });
+  },
   clearTaken: (bookId) => new Promise((resolve, reject) => {
     Book.findByIdAndUpdate(
       bookId,

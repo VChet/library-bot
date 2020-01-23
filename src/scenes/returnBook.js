@@ -55,7 +55,8 @@ returnBookScene.action(/get (.+)/, (ctx) => {
 });
 
 returnBookScene.action("return", ctx => {
-  Book.clearUser(ctx.scene.session.selected._id)
+  const bookId = ctx.scene.session.selected._id;
+  Book.clearUser(bookId)
     .then(book => {
       ctx.editMessageText(
         `Вы вернули книгу "${book.author} — ${book.name}". Спасибо!`,

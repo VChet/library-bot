@@ -117,7 +117,8 @@ searchBookScene.action(/get (.+)/, async (ctx) => {
 });
 
 searchBookScene.action("return", ctx => {
-  Book.clearUser(ctx.scene.session.selected._id)
+  const bookId = ctx.scene.session.selected._id;
+  Book.clearUser(bookId)
     .then(book => {
       ctx.editMessageText(
         `Вы вернули книгу "${book.author} — ${book.name}". Спасибо!`,
@@ -149,7 +150,10 @@ searchBookScene.action("returnTaken", ctx => {
 });
 
 searchBookScene.action("take", ctx => {
-  Book.changeUser(ctx.scene.session.selected._id, ctx.session.user._id)
+  const bookId = ctx.scene.session.selected._id;
+  const userId = ctx.session.user._id;
+
+  Book.changeUser(bookId, userId)
     .then(book => {
       ctx.editMessageText(
         `Теперь книга "${book.name}" закреплена за вами!`,

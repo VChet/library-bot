@@ -53,10 +53,13 @@ availableBooksScene.action(/get (.+)/, (ctx) => {
 });
 
 availableBooksScene.action("take", ctx => {
-  Book.changeUser(ctx.scene.session.selected._id, ctx.session.user._id)
+  const bookId = ctx.scene.session.selected._id;
+  const userId = ctx.session.user._id;
+
+  Book.changeUser(bookId, userId)
     .then(book => {
       ctx.editMessageText(
-        "Теперь книга закреплена за вами!",
+        `Теперь книга "${book.name}" закреплена за вами!`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
             m.callbackButton("Назад к списку", "back"),

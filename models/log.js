@@ -4,18 +4,21 @@ const Schema = mongoose.Schema;
 const schema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
+    required: true
   },
   book: {
     type: Schema.Types.ObjectId,
-    ref: "Book"
+    ref: "Book",
+    required: true
   },
-  date_taken: {
-    type: Date
+  taken: {
+    type: Date,
+    default: Date.now
   },
-  date_returned: {
+  returned: {
     type: Date
   }
 });
 
-exports.Transaction = mongoose.model("Transaction", schema);
+exports.Log = mongoose.model("Log", schema);
