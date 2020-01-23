@@ -54,7 +54,7 @@ searchBookScene.action(/get (.+)/, async (ctx) => {
   const bookData = ctx.scene.session.results.find(book => book._id.toString() === bookId.toString());
   ctx.scene.session.selected = bookData;
   if (bookData.user || bookData.taken_by) {
-    if (bookData.user.toString() === ctx.session.user._id.toString()) {
+    if (bookData.user && bookData.user.toString() === ctx.session.user._id.toString()) {
       let response = `Вернуть "${bookData.author} — ${bookData.name}"?`;
       if (bookData.category) response += `\nРаздел "${bookData.category}"`;
       return ctx.editMessageText(
@@ -87,9 +87,12 @@ searchBookScene.action(/get (.+)/, async (ctx) => {
       `${bookData.name} сейчас у ${user}`,
       Extra.HTML().markup(m =>
         m.inlineKeyboard([
-          m.callbackButton("Искать ещё", "findAgain"),
-          m.callbackButton("В меню", "menu"),
-          m.callbackButton("⚠️ Книга возвращена", "returnTaken", hideButton(ctx) && bookData.taken_by)
+          [
+            m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("В меню", "menu")
+          ], [
+            m.callbackButton("⚠️ Книга была возвращена", "returnTaken", hideButton(ctx) && bookData.taken_by)
+          ]
         ])
       )
     );

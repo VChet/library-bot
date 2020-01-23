@@ -3,7 +3,7 @@ const { keyboards } = require("./keyboards");
 
 const { declOfNum } = require("../helpers");
 
-const booksKeyboardScenes = ["availableBooksScene", "returnBookScene", "searchBookScene"];
+const booksKeyboardScenes = ["availableBooksScene", "unavailableBooksScene", "returnBookScene", "searchBookScene"];
 const usersKeyboardScenes = ["usersScene"];
 
 const isTaken = book => book.user || book.taken_by ? "❌" : "";
@@ -74,6 +74,9 @@ const paginator = {
     switch (ctx.scene.session.current) {
       case ("availableBooksScene"):
         newMessage = `В библиотеке ${items.length} ${declOfNum(items.length, ["книга", "книги", "книг"])}`;
+        break;
+      case ("unavailableBooksScene"):
+        newMessage = `Сейчас на руках ${items.length} ${declOfNum(items.length, ["книга", "книги", "книг"])}`;
         break;
       case ("searchBookScene"):
         newMessage = `Найдено ${items.length} ${declOfNum(items.length, ["книга", "книги", "книг"])}`;

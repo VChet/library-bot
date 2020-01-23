@@ -10,7 +10,7 @@ exports.Book = {
   getAvailable: () => new Promise((resolve, reject) => {
     Book.find({
       user: null,
-      taken_by: "",
+      taken_by: { $exists: false },
       is_archived: false
     }).lean().exec((error, books) => {
       if (error) reject(error);
@@ -19,9 +19,9 @@ exports.Book = {
   }),
   getUnavailable: () => new Promise((resolve, reject) => {
     Book.find({
-      or: [
+      $or: [
         { user: { $ne: null } },
-        { taken_by: { $ne: "" } }
+        { taken_by: { $exists: true } }
       ],
       is_archived: false
     }).populate("user").lean().exec((error, books) => {
