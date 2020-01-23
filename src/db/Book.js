@@ -111,18 +111,9 @@ exports.Book = {
   addMany: (booksArray) => new Promise((resolve, reject) => {
     Book.insertMany(
       booksArray,
-      { ordered: false },
-      (output) => {
-        const result = {};
-        if (output) {
-          if (output.writeErrors.length) {
-            console.error(output.writeErrors);
-            result.errors = output.writeErrors;
-          }
-
-          result.success = output.result.result.nInserted;
-        }
-        resolve(result);
+      (error, book) => {
+        if (error) reject(error);
+        resolve(book);
       }
     );
   })

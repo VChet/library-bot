@@ -7,7 +7,11 @@ const XLSX = require("xlsx");
 const config = require("../../config");
 const { Book } = require("../db/Book");
 const { replyWithError } = require("../components/error");
-const { declOfNum } = require("../helpers");
+const {
+  declOfNum,
+  removeBreaks,
+  titleCase
+} = require("../helpers");
 
 const uploadBooksScene = new Scene("uploadBooksScene");
 
@@ -49,15 +53,7 @@ uploadBooksScene.on("document", ctx => {
           const books = parseXLSX(file.data);
           Book.addMany(books)
             .then(result => {
-              let error;
-              if (result.errors) {
-                error = `Не было добавлено ${result.errors.length} ${declOfNum(result.errors.length, ["книга", "книги", "книг"])}`;
-              }
-              const count = result.success;
-
-              let response = "";
-              if (count) response += `Из файла "${ctx.message.document.file_name}" добавлено ${count} ${declOfNum(count, ["книга", "книги", "книг"])}`;
-              if (error) response += "\n" + error;
+              const response = `Из файла "${ctx.message.document.file_name}" добавлено ${result.length} ${declOfNum(result.length, ["книга", "книги", "книг"])}`;
 
               ctx.reply(
                 response,
@@ -85,24 +81,21 @@ uploadBooksScene.action("back", ctx => {
 });
 
 function parseXLSX(fileData) {
-  const toTitleCase = s => s.substr(0, 1).toUpperCase() + s.substr(1).toLowerCase();
-  const removeBreaks = s => s.replace(/(\r\n|\n|\r)/gm, " ");
-
   const wb = XLSX.read(fileData);
   const ws = wb.Sheets[wb.SheetNames[0]];
-  const data = XLSX.utils.sheet_to_json(ws, {header:1});
+  const data = XLSX.utils.sheet_to_json(ws, { header:1 });
 
   let category;
   const formatted = [];
-  data.forEach(book => {
-    if (book[0]) category = book[0];
-    if (!book[1] || !book[2] || book[1] === "название" || book[2] === "автор" || category === "Тема") return;
+  data.forEach(row => {
+    if (row[0]) category = row[0];
+    if (!row[1] || !row[2] || row[1] === "название" || row[2] === "автор") return;
 
     formatted.push({
-      name: removeBreaks(book[1]),
-      author: removeBreaks(book[2]),
-      category: removeBreaks(toTitleCase(category)),
-      taken_by: book[3]
+      category: removeBreaks(titleCase(category)),
+      name: removeBreaks(row[1]),
+      author: removeBreaks(row[2]),
+      taken_by: row[3] && removeBreaks(row[3])
     });
   });
 
