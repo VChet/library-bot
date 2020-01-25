@@ -1,5 +1,7 @@
 const Stage = require("telegraf/stage");
 
+const { version } = require("../package.json");
+
 // Scenes
 const { menuScene } = require("./scenes/menu");
 const { searchBookScene } = require("./scenes/searchBook");
@@ -26,12 +28,10 @@ const stage = new Stage(scenes);
 function startSceneHandler(bot) {
   bot.use(stage.middleware());
 
-  bot.on(["message", "callback_query"], (ctx) => {
-    ctx.scene.enter("menuScene");
-  });
+  bot.start(ctx => ctx.scene.enter("menuScene"));
 
-  bot.start(ctx => {
-    ctx.scene.enter("menuScene");
+  bot.command("about", (ctx) => ctx.reply(`Library Bot ${version}`));
+
   });
 }
 
