@@ -1,7 +1,7 @@
 The MIT License (MIT)
 =====================
 
-Copyright © `2020` `library_bot`
+Copyright © `2020` `Library Bot`
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
