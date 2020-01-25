@@ -93,17 +93,6 @@ usersScene.action("demote", ctx => {
     .catch(error => replyWithError(ctx, error));
 });
 
-usersScene.action("back", ctx => {
-  ctx.scene.reenter();
-});
-
-usersScene.action("menu", ctx => {
-  ctx.scene.leave();
-  return ctx.scene.enter("menuScene");
-});
-
-usersScene.action(/changePage (.+)/, paginator.changePageAction);
-
 module.exports = {
   usersScene
 };

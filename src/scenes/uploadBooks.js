@@ -71,15 +71,6 @@ uploadBooksScene.on("document", ctx => {
     });
 });
 
-uploadBooksScene.action("menu", ctx => {
-  ctx.scene.leave();
-  return ctx.scene.enter("menuScene");
-});
-
-uploadBooksScene.action("back", ctx => {
-  ctx.scene.reenter();
-});
-
 function parseXLSX(fileData) {
   const wb = XLSX.read(fileData);
   const ws = wb.Sheets[wb.SheetNames[0]];

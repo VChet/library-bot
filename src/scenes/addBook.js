@@ -79,15 +79,6 @@ addBookScene.action("add", ctx => {
     .catch(error => replyWithError(ctx, error));
 });
 
-addBookScene.action("menu", ctx => {
-  ctx.scene.leave();
-  return ctx.scene.enter("menuScene");
-});
-
-addBookScene.action("back", ctx => {
-  ctx.scene.reenter();
-});
-
 module.exports = {
   addBookScene
 };

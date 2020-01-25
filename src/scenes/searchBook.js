@@ -40,7 +40,7 @@ searchBookScene.on("message", ctx => {
         "Ничего не найдено",
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
-            m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("Искать ещё", "back"),
             m.callbackButton("В меню", "menu")
           ])
         )
@@ -67,7 +67,7 @@ searchBookScene.action(/get (.+)/, async (ctx) => {
               m.callbackButton("⚠️ Изменить", "edit", hideButton(ctx)),
               m.callbackButton("⚠️ В архив", "archiveCheck", hideButton(ctx))
             ], [
-              m.callbackButton("Искать ещё", "findAgain"),
+              m.callbackButton("Искать ещё", "back"),
               m.callbackButton("В меню", "menu")
             ]
           ])
@@ -88,7 +88,7 @@ searchBookScene.action(/get (.+)/, async (ctx) => {
       Extra.HTML().markup(m =>
         m.inlineKeyboard([
           [
-            m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("Искать ещё", "back"),
             m.callbackButton("В меню", "menu")
           ], [
             m.callbackButton("⚠️ Книга была возвращена", "returnTaken", hideButton(ctx) && bookData.taken_by)
@@ -107,7 +107,7 @@ searchBookScene.action(/get (.+)/, async (ctx) => {
             m.callbackButton("⚠️ Изменить", "edit", hideButton(ctx)),
             m.callbackButton("⚠️ В архив", "archiveCheck", hideButton(ctx))
           ], [
-            m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("Искать ещё", "back"),
             m.callbackButton("В меню", "menu")
           ]
         ])
@@ -124,7 +124,7 @@ searchBookScene.action("return", ctx => {
         `Вы вернули книгу "${book.author} — ${book.name}". Спасибо!`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
-            m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("Искать ещё", "back"),
             m.callbackButton("В меню", "menu")
           ])
         )
@@ -140,7 +140,7 @@ searchBookScene.action("returnTaken", ctx => {
         `Книга "${book.name}" возвращена в библиотеку`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
-            m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("Искать ещё", "back"),
             m.callbackButton("В меню", "menu")
           ])
         )
@@ -159,7 +159,7 @@ searchBookScene.action("take", ctx => {
         `Теперь книга "${book.name}" закреплена за вами!`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
-            m.callbackButton("Искать ещё", "findAgain"),
+            m.callbackButton("Искать ещё", "back"),
             m.callbackButton("В меню", "menu")
           ])
         )
@@ -175,7 +175,7 @@ searchBookScene.action("archiveCheck", ctx => {
       m.inlineKeyboard([
         [m.callbackButton("Понятно, в архив!", "archive")],
         [
-          m.callbackButton("Вернуться в поиск", "findAgain"),
+          m.callbackButton("Вернуться в поиск", "back"),
           m.callbackButton("В меню", "menu")
         ]
       ])
@@ -196,7 +196,7 @@ searchBookScene.action("archive", ctx => {
         `Книга "${book.name}" добавлена в архив`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
-            m.callbackButton("Вернуться в поиск", "findAgain"),
+            m.callbackButton("Вернуться в поиск", "back"),
             m.callbackButton("В меню", "menu")
           ])
         )
@@ -204,17 +204,6 @@ searchBookScene.action("archive", ctx => {
     })
     .catch(error => replyWithError(ctx, error));
 });
-
-searchBookScene.action("findAgain", ctx => {
-  ctx.scene.reenter();
-});
-
-searchBookScene.action("menu", ctx => {
-  ctx.scene.leave();
-  return ctx.scene.enter("menuScene");
-});
-
-searchBookScene.action(/changePage (.+)/, paginator.changePageAction);
 
 module.exports = {
   searchBookScene

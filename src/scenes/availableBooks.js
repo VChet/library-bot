@@ -71,17 +71,6 @@ availableBooksScene.action("take", ctx => {
     .catch(error => replyWithError(ctx, error));
 });
 
-availableBooksScene.action("back", ctx => {
-  ctx.scene.reenter();
-});
-
-availableBooksScene.action("menu", ctx => {
-  ctx.scene.leave();
-  return ctx.scene.enter("menuScene");
-});
-
-availableBooksScene.action(/changePage (.+)/, paginator.changePageAction);
-
 module.exports = {
   availableBooksScene
 };

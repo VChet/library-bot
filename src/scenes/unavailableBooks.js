@@ -51,17 +51,6 @@ unavailableBooksScene.action(/get (.+)/, (ctx) => {
   );
 });
 
-unavailableBooksScene.action("back", ctx => {
-  ctx.scene.reenter();
-});
-
-unavailableBooksScene.action("menu", ctx => {
-  ctx.scene.leave();
-  return ctx.scene.enter("menuScene");
-});
-
-unavailableBooksScene.action(/changePage (.+)/, paginator.changePageAction);
-
 module.exports = {
   unavailableBooksScene
 };

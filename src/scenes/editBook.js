@@ -70,15 +70,6 @@ editBookScene.action("edit", ctx => {
     .catch(error => replyWithError(ctx, error));
 });
 
-editBookScene.action("menu", ctx => {
-  ctx.scene.leave();
-  return ctx.scene.enter("menuScene");
-});
-
-editBookScene.action("back", ctx => {
-  ctx.scene.reenter();
-});
-
 module.exports = {
   editBookScene
 };
