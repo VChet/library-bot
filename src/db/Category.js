@@ -13,4 +13,10 @@ exports.Category = {
       resolve(book);
     });
   }),
+  addOne: (name) => new Promise((resolve, reject) => {
+    Category.create({ name }, (error, category) => {
+      if (error) reject(error);
+      resolve(category);
+    });
+  })
 };

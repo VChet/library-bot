@@ -6,6 +6,7 @@ const XLSX = require("xlsx");
 
 const config = require("../../config");
 const { Book } = require("../db/Book");
+const { Category } = require("../db/Category");
 const { replyWithError } = require("../components/error");
 const {
   declOfNum,
@@ -49,12 +50,11 @@ uploadBooksScene.on("document", ctx => {
         responseType: "arraybuffer",
         httpsAgent
       })
-        .then(file => {
-          const books = parseXLSX(file.data);
+        .then(async (file) => {
+          const books = await parseXLSX(file.data);
           Book.addMany(books)
             .then(result => {
               const response = `Из файла "${ctx.message.document.file_name}" добавлено ${result.length} ${declOfNum(result.length, ["книга", "книги", "книг"])}`;
-
               ctx.reply(
                 response,
                 Extra.HTML().markup(m =>
@@ -71,25 +71,35 @@ uploadBooksScene.on("document", ctx => {
     });
 });
 
-function parseXLSX(fileData) {
+async function parseXLSX(fileData) {
   const wb = XLSX.read(fileData);
   const ws = wb.Sheets[wb.SheetNames[0]];
-  const data = XLSX.utils.sheet_to_json(ws, { header:1 });
+  const data = XLSX.utils.sheet_to_json(ws, {
+    header: 1,
+    blankrows: false,
+    range: 2
+  });
 
-  let category;
   const formatted = [];
-  data.forEach(row => {
-    if (row[0]) category = row[0];
-    if (!row[1] || !row[2] || row[1] === "название" || row[2] === "автор") return;
+  let category = {};
+  for (const row of data) {
+    if (row.length < 3) continue;
+
+    if (row[0]) {
+      const categoryString = removeBreaks(titleCase(row[0]));
+      if (categoryString !== category.name) {
+        category = await Category.getByName(categoryString);
+        if (!category) category = await Category.addOne(categoryString);
+      }
+    }
 
     formatted.push({
-      category: removeBreaks(titleCase(category)),
+      category,
       name: removeBreaks(row[1]),
       author: removeBreaks(row[2]),
       taken_by: row[3] && removeBreaks(row[3])
     });
-  });
-
+  }
   return formatted;
 }
 
