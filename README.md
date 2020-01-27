@@ -1,7 +1,7 @@
 # Library Bot
-[![version](https://img.shields.io/github/tag/VChet/library_bot.svg?label=version)](https://github.com/VChet/library_bot/tags)
-[![dep](https://img.shields.io/david/VChet/library_bot.svg?style=flat)](https://david-dm.org/VChet/library_bot)
-[![devDep](https://img.shields.io/david/dev/VChet/library_bot.svg?label=devDependencies)](https://david-dm.org/VChet/library_bot?type=dev)
+[![version](https://img.shields.io/github/tag/VChet/library-bot.svg?label=version)](https://github.com/VChet/library-bot/tags)
+[![dep](https://img.shields.io/david/VChet/library-bot.svg?style=flat)](https://david-dm.org/VChet/library-bot)
+[![devDep](https://img.shields.io/david/dev/VChet/library-bot.svg?label=devDependencies)](https://david-dm.org/VChet/library-bot?type=dev)
 [![CC](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 Uses Node.js, MongoDB, Telegraf.js
