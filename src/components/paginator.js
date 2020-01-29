@@ -27,7 +27,7 @@ const paginator = {
           )];
         } else if (usersKeyboardScenes.indexOf(ctx.scene.session.current) !== -1) {
           return [m.callbackButton(
-            `${item.first_name} ${item.last_name} (${item.role})`,
+            `${item.full_name} (${item.role})`,
             `get ${item._id}`
           )];
         }

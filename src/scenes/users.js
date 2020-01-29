@@ -32,7 +32,7 @@ usersScene.action(/get (.+)/, (ctx) => {
   const userData = ctx.scene.session.results.find(user => user._id.toString() === userId.toString());
   ctx.scene.session.selected = userData;
   return ctx.editMessageText(
-    `${userData.first_name} ${userData.last_name} @${userData.username} (${userData.role})`,
+    `${userData.full_name} @${userData.username} (${userData.role})`,
     Extra.HTML().markup(m =>
       m.inlineKeyboard([
         [
@@ -58,7 +58,7 @@ usersScene.action("promote", ctx => {
   User.changeRole(selectedUser, newRole)
     .then(user => {
       ctx.editMessageText(
-        `Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`,
+        `Пользователь ${user.full_name} теперь ${user.role}`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
             m.callbackButton("Назад к списку", "back"),
@@ -81,7 +81,7 @@ usersScene.action("demote", ctx => {
   User.changeRole(selectedUser, newRole)
     .then(user => {
       ctx.editMessageText(
-        `Пользователь ${user.first_name} ${user.last_name} теперь ${user.role}`,
+        `Пользователь ${user.full_name} теперь ${user.role}`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
             m.callbackButton("Назад к списку", "back"),

@@ -29,4 +29,10 @@ const schema = new Schema({
   }
 });
 
+schema.virtual("full_name").get(function() {
+  let fullname = this.first_name;
+  if (this.last_name) fullname += " " + this.last_name;
+  return fullname;
+});
+
 exports.User = mongoose.model("User", schema);
