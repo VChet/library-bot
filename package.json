@@ -17,11 +17,11 @@
     "test": "npx eslint **/*.js"
   },
   "dependencies": {
-    "axios": "^0.19.1",
-    "mongoose": "^5.8.3",
+    "axios": "^0.19.2",
+    "mongoose": "^5.8.10",
     "socks5-https-client": "^1.2.1",
-    "telegraf": "^3.35.0",
-    "xlsx": "^0.15.4"
+    "telegraf": "^3.36.0",
+    "xlsx": "^0.15.5"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
