@@ -46,7 +46,7 @@ addBookScene.on("message", async (ctx) => {
   };
   ctx.scene.session.bookData = bookData;
 
-  Book.getByName(bookData.author, bookData.name)
+  Book.isExists(bookData.author, bookData.name)
     .then(book => {
       if (book) {
         return ctx.reply(
