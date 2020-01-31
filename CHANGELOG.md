@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/VChet/library-bot/compare/v1.2.1...v1.3.0) (2020-01-31)
+
+
+### Features
+
+* **book:** hide empty author field in paginator and selector ([ac059d0](https://github.com/VChet/library-bot/commit/ac059d04dd988246285dec9c5f01caeb4c85080f)), closes [#4](https://github.com/VChet/library-bot/issues/4)
+* **category:** add category scene with list and change name function ([3d1562e](https://github.com/VChet/library-bot/commit/3d1562e816144742d217f1f1f53bcdb46b23e9b9)), closes [#2](https://github.com/VChet/library-bot/issues/2)
+* **category:** show category name when taking/returning a book ([8df23fa](https://github.com/VChet/library-bot/commit/8df23faf65f0daff70a5d9fa7dc0d804a5a9f74d)), closes [#3](https://github.com/VChet/library-bot/issues/3)
+
+
+### Bug Fixes
+
+* **addBook:** fix wrong function name ([fe285b6](https://github.com/VChet/library-bot/commit/fe285b6fbc6b7d16df92cd9bc6b1cc7ea0f7d4a1))
+
 ## [1.2.1](https://github.com/VChet/library-bot/compare/v1.2.0...v1.2.1) (2020-01-29)
 
 
@@ -11,7 +25,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [1.2.0](https://github.com/VChet/library-bot/compare/v1.1.0...v1.2.0) (2020-01-27)
+## [1.2.0](https://github.com/VChet/library-bot/compare/v1.1.0...v1.2.0) (2020-01-27)
 
 
 ### Features
@@ -22,7 +36,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [1.1.0](https://github.com/VChet/library-bot/compare/v1.0.1...v1.1.0) (2020-01-24)
+## [1.1.0](https://github.com/VChet/library-bot/compare/v1.0.1...v1.1.0) (2020-01-24)
 
 
 ### Bug Fixes
@@ -53,7 +67,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [1.0.0](https://github.com/VChet/library-bot/compare/2ba8acf...v1.0.0) (2020-01-18)
+## [1.0.0](https://github.com/VChet/library-bot/compare/2ba8acf...v1.0.0) (2020-01-18)
 
 
 ### Bug Fixes
