@@ -10,6 +10,7 @@ const { returnBookScene } = require("./scenes/returnBook");
 const { availableBooksScene } = require("./scenes/availableBooks");
 const { unavailableBooksScene } = require("./scenes/unavailableBooks");
 const { usersScene } = require("./scenes/users");
+const { categoriesScene } = require("./scenes/categories");
 const { addBookScene } = require("./scenes/addBook");
 const { editBookScene } = require("./scenes/editBook");
 const { uploadBooksScene } = require("./scenes/uploadBooks");
@@ -20,6 +21,7 @@ const scenes = [
   availableBooksScene,
   unavailableBooksScene,
   usersScene,
+  categoriesScene,
   addBookScene,
   editBookScene,
   uploadBooksScene
@@ -42,6 +44,7 @@ function startSceneHandler(bot) {
   bot.action("return", ctx => ctx.scene.enter("returnBookScene"));
   bot.action("available", ctx => ctx.scene.enter("availableBooksScene"));
   bot.action("unavailable", ctx => ctx.scene.enter("unavailableBooksScene"));
+  bot.action("categories", isAdmin, ctx => ctx.scene.enter("categoriesScene"));
   bot.action("users", isAdmin, ctx => ctx.scene.enter("usersScene"));
   bot.action("add", isAdmin, ctx => ctx.scene.enter("addBookScene"));
   bot.action("upload", isAdmin, ctx => ctx.scene.enter("uploadBooksScene"));

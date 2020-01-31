@@ -17,10 +17,11 @@ menuScene.enter(ctx => {
       ],
       [
         m.callbackButton("⚠️ Пользователи", "users", hide),
-        m.callbackButton("⚠️ Добавить книгу", "add", hide)
+        m.callbackButton("⚠️ Разделы", "categories", hide),
       ],
       [
-        m.callbackButton("⚠️ Загрузить книги файлом", "upload", hide)
+        m.callbackButton("⚠️ Добавить книгу", "add", hide),
+        m.callbackButton("⚠️ Загрузить из файла", "upload", hide)
       ]
     ];
     return m.inlineKeyboard(buttons);

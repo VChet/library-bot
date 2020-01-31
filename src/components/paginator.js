@@ -3,8 +3,9 @@ const { keyboards } = require("./keyboards");
 
 const { declOfNum } = require("../helpers");
 
-const booksKeyboardScenes = ["availableBooksScene", "unavailableBooksScene", "returnBookScene", "searchBookScene"];
+const booksKeyboardScenes = ["availableBooksScene", "unavailableBooksScene", "searchBookScene", "returnBookScene"];
 const usersKeyboardScenes = ["usersScene"];
+const categoryKeyboardScenes = ["categoriesScene"];
 
 const isTaken = book => book.user || book.taken_by ? "❌" : "";
 
@@ -20,14 +21,19 @@ const paginator = {
       if (itemsLength >= 10) items = items.slice((currentPage - 1) * 10, currentPage * 10);
 
       keyboard.push(...items.map(item => {
-        if (booksKeyboardScenes.indexOf(ctx.scene.session.current) !== -1) {
+        if (booksKeyboardScenes.includes(ctx.scene.session.current)) {
           return [m.callbackButton(
             `${item.name_author} ${isTaken(item)}`,
             `get ${item._id}`
           )];
-        } else if (usersKeyboardScenes.indexOf(ctx.scene.session.current) !== -1) {
+        } else if (usersKeyboardScenes.includes(ctx.scene.session.current)) {
           return [m.callbackButton(
             `${item.full_name} (${item.role})`,
+            `get ${item._id}`
+          )];
+        } else if (categoryKeyboardScenes.includes(ctx.scene.session.current)) {
+          return [m.callbackButton(
+            item.name,
             `get ${item._id}`
           )];
         }
@@ -86,6 +92,9 @@ const paginator = {
         break;
       case ("usersScene"):
         newMessage = `В базе ${items.length} ${declOfNum(items.length, ["пользователь", "пользователя", "пользователей"])}`;
+        break;
+      case ("categoriesScene"):
+        newMessage = `В базе ${items.length} ${declOfNum(items.length, ["раздел", "раздела", "разделов"])}`;
         break;
     }
     newMessage += `\n(показаны с ${firstItemsBorder} по ${secondItemsBorder})`;

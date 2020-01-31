@@ -46,6 +46,12 @@ exports.Book = {
       resolve(books);
     });
   }),
+  getByCategory: (categoryId) => new Promise((resolve, reject) => {
+    Book.find({ category: categoryId }).exec((error, books) => {
+      if (error) reject(error);
+      resolve(books);
+    });
+  }),
   isExists: (author, name) => new Promise((resolve, reject) => {
     Book.findOne({ author, name }).exec((error, book) => {
       if (error) reject(error);
