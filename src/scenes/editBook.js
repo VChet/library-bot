@@ -7,7 +7,7 @@ const { replyWithError } = require("../components/error");
 
 const editBookScene = new Scene("editBookScene");
 
-editBookScene.enter(async (ctx) => {
+editBookScene.enter(ctx => {
   if (!ctx.session.selectedBook) {
     ctx.editMessageText(
       "Что-то пошло не так. Книга не была выбрана",
@@ -19,9 +19,8 @@ editBookScene.enter(async (ctx) => {
   ctx.scene.session.bookData = ctx.session.selectedBook;
   const bookData = ctx.scene.session.bookData;
 
-  const category = await Category.getById(bookData.category);
-  let response = "Введите данные о книге в формате \nАвтор\nНазвание\nКатегория\n\n";
-  response += `Текущая книга: \nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nКатегория: ${category.name}`;
+  let response = "Введите данные о книге в формате \nАвтор\nНазвание\nРаздел\n\n";
+  response += `Текущая книга:\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nРаздел: ${bookData.category.name}`;
 
   ctx.editMessageText(
     response,
@@ -45,7 +44,7 @@ editBookScene.on("message", async (ctx) => {
   const category = await Category.getByName(arr[2]);
   if (!category) {
     return ctx.reply(
-      `Категории "${arr[2]}" нет. Попробуйте снова`,
+      `Раздела "${arr[2]}" нет. Попробуйте снова`,
       Extra.HTML().markup(m =>
         m.inlineKeyboard([m.callbackButton("Отмена", "menu")])
       )
@@ -58,7 +57,7 @@ editBookScene.on("message", async (ctx) => {
   const bookData = ctx.scene.session.bookData;
 
   ctx.reply(
-    `Все верно?\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nКатегория: ${bookData.category.name}`,
+    `Все верно?\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nРаздел: ${bookData.category.name}`,
     Extra.HTML().markup(m =>
       m.inlineKeyboard([
         m.callbackButton("Да", "edit"),

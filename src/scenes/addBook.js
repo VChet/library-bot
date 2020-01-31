@@ -9,7 +9,7 @@ const addBookScene = new Scene("addBookScene");
 
 addBookScene.enter(ctx => {
   ctx.editMessageText(
-    "Введите данные о книге в формате \nАвтор\nНазвание\nКатегория",
+    "Введите данные о книге в формате \nАвтор\nНазвание\nРаздел",
     Extra.HTML().markup(m =>
       m.inlineKeyboard([m.callbackButton("Отмена", "menu")])
     )
@@ -32,7 +32,7 @@ addBookScene.on("message", async (ctx) => {
   const category = await Category.getByName(arr[2]);
   if (!category) {
     return ctx.reply(
-      `Категории "${arr[2]}" нет. Попробуйте снова`,
+      `Раздела "${arr[2]}" нет. Попробуйте снова`,
       Extra.HTML().markup(m =>
         m.inlineKeyboard([m.callbackButton("Отмена", "menu")])
       )
@@ -61,7 +61,7 @@ addBookScene.on("message", async (ctx) => {
       }
 
       ctx.reply(
-        `Все верно?\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nКатегория: ${bookData.category.name}`,
+        `Все верно?\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nРаздел: ${bookData.category.name}`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
             m.callbackButton("Да, добавить", "add"),

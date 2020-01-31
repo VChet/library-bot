@@ -14,7 +14,7 @@ exports.Book = {
       user: null,
       taken_by: { $exists: false },
       is_archived: false
-    }).exec((error, books) => {
+    }).populate("category").exec((error, books) => {
       if (error) reject(error);
       resolve(books);
     });
@@ -32,13 +32,16 @@ exports.Book = {
     });
   }),
   getByQuery: (query) => new Promise((resolve, reject) => {
-    Book.find({ $text: { $search: query }, is_archived: false }).exec((error, books) => {
+    Book.find({
+      $text: { $search: query },
+      is_archived: false
+    }).populate("category").exec((error, books) => {
       if (error) reject(error);
       resolve(books);
     });
   }),
   getByUser: (userId) => new Promise((resolve, reject) => {
-    Book.find({ user: userId }).exec((error, books) => {
+    Book.find({ user: userId }).populate("category").exec((error, books) => {
       if (error) reject(error);
       resolve(books);
     });

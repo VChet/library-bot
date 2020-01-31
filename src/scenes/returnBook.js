@@ -2,7 +2,6 @@ const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
 const { Book } = require("../db/Book");
-const { Category } = require("../db/Category");
 const { replyWithError } = require("../components/error");
 const { paginator } = require("../components/paginator");
 const { declOfNum } = require("../helpers");
@@ -34,13 +33,12 @@ returnBookScene.enter(ctx => {
     .catch(error => replyWithError(ctx, error));
 });
 
-returnBookScene.action(/get (.+)/, async (ctx) => {
+returnBookScene.action(/get (.+)/, ctx => {
   const bookId = ctx.match[1];
   const bookData = ctx.scene.session.userBooks.find(book => book._id.toString() === bookId.toString());
   ctx.scene.session.selected = bookData;
 
-  const category = await Category.getById(bookData.category);
-  const response = `Вернуть "${bookData.name_author}"?\nРаздел "${category.name}"`;
+  const response = `Вернуть "${bookData.name_author}"?\nРаздел "${bookData.category.name}"`;
   return ctx.editMessageText(
     response,
     Extra.HTML().markup(m =>
