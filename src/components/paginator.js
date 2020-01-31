@@ -22,7 +22,7 @@ const paginator = {
       keyboard.push(...items.map(item => {
         if (booksKeyboardScenes.indexOf(ctx.scene.session.current) !== -1) {
           return [m.callbackButton(
-            `${item.author} — ${item.name} ${isTaken(item)}`,
+            `${item.name_author} ${isTaken(item)}`,
             `get ${item._id}`
           )];
         } else if (usersKeyboardScenes.indexOf(ctx.scene.session.current) !== -1) {

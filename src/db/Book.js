@@ -4,7 +4,7 @@ const { Log } = require("../../models/log");
 
 exports.Book = {
   getAll: () => new Promise((resolve, reject) => {
-    Book.find().lean().exec((error, books) => {
+    Book.find().exec((error, books) => {
       if (error) reject(error);
       resolve(books);
     });
@@ -14,7 +14,7 @@ exports.Book = {
       user: null,
       taken_by: { $exists: false },
       is_archived: false
-    }).lean().exec((error, books) => {
+    }).exec((error, books) => {
       if (error) reject(error);
       resolve(books);
     });
@@ -26,25 +26,25 @@ exports.Book = {
         { taken_by: { $exists: true } }
       ],
       is_archived: false
-    }).populate("user").lean().exec((error, books) => {
+    }).populate("user").exec((error, books) => {
       if (error) reject(error);
       resolve(books);
     });
   }),
   getByQuery: (query) => new Promise((resolve, reject) => {
-    Book.find({ $text: { $search: query }, is_archived: false }).lean().exec((error, books) => {
+    Book.find({ $text: { $search: query }, is_archived: false }).exec((error, books) => {
       if (error) reject(error);
       resolve(books);
     });
   }),
   getByUser: (userId) => new Promise((resolve, reject) => {
-    Book.find({ user: userId }).lean().exec((error, books) => {
+    Book.find({ user: userId }).exec((error, books) => {
       if (error) reject(error);
       resolve(books);
     });
   }),
   isExists: (author, name) => new Promise((resolve, reject) => {
-    Book.findOne({ author, name }).lean().exec((error, book) => {
+    Book.findOne({ author, name }).exec((error, book) => {
       if (error) reject(error);
       resolve(book);
     });

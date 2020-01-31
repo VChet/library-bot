@@ -40,7 +40,7 @@ returnBookScene.action(/get (.+)/, async (ctx) => {
   ctx.scene.session.selected = bookData;
 
   const category = await Category.getById(bookData.category);
-  const response = `Вернуть "${bookData.author} — ${bookData.name}"?\nРаздел "${category.name}"`;
+  const response = `Вернуть "${bookData.name_author}"?\nРаздел "${category.name}"`;
   return ctx.editMessageText(
     response,
     Extra.HTML().markup(m =>

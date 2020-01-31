@@ -38,7 +38,7 @@ availableBooksScene.action(/get (.+)/, (ctx) => {
   const bookData = ctx.scene.session.results.find(book => book._id.toString() === bookId.toString());
   ctx.scene.session.selected = bookData;
   return ctx.editMessageText(
-    `Выбранная книга: ${bookData.author} — ${bookData.name}.`,
+    `Выбранная книга: ${bookData.name_author}.`,
     Extra.HTML().markup(m =>
       m.inlineKeyboard([
         [

@@ -57,7 +57,7 @@ searchBookScene.action(/get (.+)/, async (ctx) => {
   if (bookData.user || bookData.taken_by) {
     if (bookData.user && bookData.user.toString() === ctx.session.user._id.toString()) {
       const category = await Category.getById(bookData.category);
-      const response = `Вернуть "${bookData.author} — ${bookData.name}"?\nРаздел "${category.name}"`;
+      const response = `Вернуть "${bookData.name_author}"?\nРаздел "${category.name}"`;
       return ctx.editMessageText(
         response,
         Extra.HTML().markup(m =>
@@ -99,7 +99,7 @@ searchBookScene.action(/get (.+)/, async (ctx) => {
     );
   } else {
     ctx.editMessageText(
-      `Выбранная книга: ${bookData.author} — ${bookData.name}.`,
+      `Выбранная книга: ${bookData.name_author}.`,
       Extra.HTML().markup(m =>
         m.inlineKeyboard([
           [
@@ -122,7 +122,7 @@ searchBookScene.action("return", ctx => {
   Book.clearUser(bookId)
     .then(book => {
       ctx.editMessageText(
-        `Вы вернули книгу "${book.author} — ${book.name}". Спасибо!`,
+        `Вы вернули книгу "${book.name_author}". Спасибо!`,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
             m.callbackButton("Искать ещё", "back"),

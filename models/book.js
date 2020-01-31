@@ -30,6 +30,12 @@ const schema = new Schema({
   }
 });
 
+schema.virtual("name_author").get(function() {
+  let string = this.name;
+  if (this.author !== "-") string += ` [${this.author}]`;
+  return string;
+});
+
 // Check combination of name and author fields to be unique
 schema.index({ "name": 1, "author": 1 }, { "unique": true });
 // Indexate name and author fields for search
