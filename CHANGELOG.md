@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.1](https://github.com/VChet/library-bot/compare/v1.3.0...v1.3.1) (2020-02-06)
+
+
+### Bug Fixes
+
+* **book:** fix empty data when selecting unavailable book ([25fae77](https://github.com/VChet/library-bot/commit/25fae77ef3b59c21628f2fdb46afca7214393c64))
+* **user:** fix error when changing role ([1589f4a](https://github.com/VChet/library-bot/commit/1589f4ac557d02fd9117b8958289f4ec55f0f0da))
+
 ## [1.3.0](https://github.com/VChet/library-bot/compare/v1.2.1...v1.3.0) (2020-01-31)
 
 
@@ -147,5 +155,3 @@ All notable changes to this project will be documented in this file. See [standa
 * **user start:** store user data in session ([bb0a82c](https://github.com/VChet/library-bot/commit/bb0a82c))
 * **users:** add paginator component in usersScene ([730dbf1](https://github.com/VChet/library-bot/commit/730dbf1))
 * **users:** add users list with ability to promote/demote users ([aae82a2](https://github.com/VChet/library-bot/commit/aae82a2))
-
-
