@@ -24,10 +24,6 @@ unavailableBooksScene.enter(ctx => {
         );
       }
 
-      books.forEach(book => {
-        book.user = book.user ? `@${book.user.username}` : book.taken_by;
-      });
-
       ctx.editMessageText(
         `Сейчас на руках ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}`,
         paginator.keyboard(ctx, books)
