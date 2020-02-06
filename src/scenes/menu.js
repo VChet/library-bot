@@ -1,6 +1,7 @@
 const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
+const { paginator } = require("../components/paginator");
 const menuScene = new Scene("menuScene");
 
 menuScene.enter(ctx => {
@@ -27,6 +28,7 @@ menuScene.enter(ctx => {
     return m.inlineKeyboard(buttons);
   });
 
+  paginator.page = 1;
   if (ctx.updateType === "message") {
     ctx.reply("Выберите действие:", keyboard);
   } else {
