@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.2](https://github.com/VChet/library-bot/compare/v1.3.1...v1.3.2) (2020-02-06)
+
+
+### Bug Fixes
+
+* **book:** fix showing undefined user of taken book ([80d153e](https://github.com/VChet/library-bot/commit/80d153e0ab514a42b17730a58cd28e6e62775a9e))
+* **paginator:** reset paginator page to first when returning to menu ([be3f967](https://github.com/VChet/library-bot/commit/be3f96783ebf579eaf61854f449bcec3611fdb9e)), closes [#5](https://github.com/VChet/library-bot/issues/5)
+
 ### [1.3.1](https://github.com/VChet/library-bot/compare/v1.3.0...v1.3.1) (2020-02-06)
 
 
