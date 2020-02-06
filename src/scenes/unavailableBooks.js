@@ -39,9 +39,13 @@ unavailableBooksScene.enter(ctx => {
 unavailableBooksScene.action(/get (.+)/, (ctx) => {
   const bookId = ctx.match[1];
   const bookData = ctx.scene.session.results.find(book => book._id.toString() === bookId.toString());
+  const user = bookData.user ?
+    `@${bookData.user.username}` :
+    bookData.taken_by;
+
   ctx.scene.session.selected = bookData;
   return ctx.editMessageText(
-    `${bookData.name_author}. Сейчас у ${bookData.user}`,
+    `${bookData.name_author}. Сейчас у ${user}`,
     Extra.HTML().markup(m =>
       m.inlineKeyboard([
         m.callbackButton("Назад к списку", "back"),

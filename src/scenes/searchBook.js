@@ -49,7 +49,7 @@ searchBookScene.on("message", ctx => {
     .catch(error => replyWithError(ctx, error));
 });
 
-searchBookScene.action(/get (.+)/, async (ctx) => {
+searchBookScene.action(/get (.+)/, (ctx) => {
   const bookId = ctx.match[1];
   const bookData = ctx.scene.session.results.find(book => book._id.toString() === bookId.toString());
   ctx.scene.session.selected = bookData;
@@ -74,16 +74,12 @@ searchBookScene.action(/get (.+)/, async (ctx) => {
       );
     }
 
-    let user;
-    if (bookData.user) {
-      const userData = await User.getById(bookData.user);
-      user = `@${userData.username}`;
-    } else {
-      user = bookData.taken_by;
-    }
+    const user = bookData.user ?
+      `@${bookData.user.username}` :
+      bookData.taken_by;
 
     return ctx.editMessageText(
-      `${bookData.name} сейчас у ${user}`,
+      `${bookData.name_author} сейчас у ${user}`,
       Extra.HTML().markup(m =>
         m.inlineKeyboard([
           [
