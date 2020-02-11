@@ -1,6 +1,8 @@
 const { Extra } = require("telegraf");
+const dayjs = require("dayjs");
 
 const { Book } = require("../db/Book");
+const { Log } = require("../db/Log");
 const { replyWithError } = require("../components/error");
 const { hideButton } = require("../helpers");
 
@@ -14,6 +16,7 @@ const book = {
           m.callbackButton("Назад", "back"),
           m.callbackButton("В меню", "menu")
         ], [
+          m.callbackButton("⚠️ История", "logs", hideButton(ctx)),
           m.callbackButton("⚠️ Изменить", "edit", hideButton(ctx)),
           m.callbackButton("⚠️ В архив", "archiveCheck", hideButton(ctx))
         ]
@@ -102,6 +105,30 @@ const book = {
           ])
         )
       );
+    },
+    logs(ctx) {
+      const bookId = ctx.scene.session.selected._id;
+      Log.getByBook(bookId)
+        .then(logs => {
+          let response = "Нет записей";
+          if (logs.length) {
+            const format = (date) => dayjs(date).format("DD-MM-YYYY");
+            response = logs.map((log) => {
+              return `[${format(log.taken)} ${format(log.returned)}] ${log.user.full_name} @${log.user.username}`;
+            }).join("\n");
+          }
+
+          ctx.editMessageText(
+            response,
+            Extra.HTML().markup(m =>
+              m.inlineKeyboard([
+                m.callbackButton("Назад", "back"),
+                m.callbackButton("В меню", "menu")
+              ])
+            )
+          );
+        })
+        .catch(error => replyWithError(ctx, error));
     }
   }
 };

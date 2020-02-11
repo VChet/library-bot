@@ -60,6 +60,7 @@ function startSceneHandler(bot) {
   bot.action("edit", book.actions.edit);
   bot.action("archiveCheck", book.actions.archiveCheck);
   bot.action("archive", book.actions.archive);
+  bot.action("logs", book.actions.logs);
 }
 
 module.exports = { startSceneHandler };
