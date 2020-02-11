@@ -1,5 +1,4 @@
-const { Extra } = require("telegraf");
-const { keyboards } = require("./keyboards");
+const { Extra, Markup } = require("telegraf");
 
 const { declOfNum } = require("../helpers");
 
@@ -42,24 +41,24 @@ const paginator = {
       if (itemsLength > 10) {
         if (currentPage === 1) {
           keyboard.push([
-            keyboards.menuButton(),
+            Markup.callbackButton("В меню", "menu"),
             m.callbackButton("Вперед", "changePage next")
           ]);
         } else if (currentPage > 1 && currentPage * 10 < itemsLength) {
           keyboard.push([
             m.callbackButton("Назад", "changePage previous"),
-            keyboards.menuButton(),
+            Markup.callbackButton("В меню", "menu"),
             m.callbackButton("Вперед", "changePage next")
           ]);
         } else if (currentPage * 10 >= itemsLength) {
           keyboard.push([
             m.callbackButton("Назад", "changePage previous"),
-            keyboards.menuButton()
+            Markup.callbackButton("В меню", "menu")
           ]);
         }
       } else {
         keyboard.push([
-          keyboards.menuButton()
+          Markup.callbackButton("В меню", "menu")
         ]);
       }
 
