@@ -2,6 +2,7 @@ const Stage = require("telegraf/stage");
 
 const { version } = require("../package.json");
 const { paginator } = require("./components/paginator");
+const { book } = require("./components/book");
 
 // Scenes
 const { menuScene } = require("./scenes/menu");
@@ -41,7 +42,7 @@ function startSceneHandler(bot) {
 
   bot.action("menu", ctx => ctx.scene.enter("menuScene"));
   bot.action("search", ctx => ctx.scene.enter("searchBookScene"));
-  bot.action("return", ctx => ctx.scene.enter("returnBookScene"));
+  bot.action("taken", ctx => ctx.scene.enter("returnBookScene"));
   bot.action("available", ctx => ctx.scene.enter("availableBooksScene"));
   bot.action("unavailable", ctx => ctx.scene.enter("unavailableBooksScene"));
   bot.action("categories", isAdmin, ctx => ctx.scene.enter("categoriesScene"));
@@ -49,8 +50,16 @@ function startSceneHandler(bot) {
   bot.action("add", isAdmin, ctx => ctx.scene.enter("addBookScene"));
   bot.action("upload", isAdmin, ctx => ctx.scene.enter("uploadBooksScene"));
 
+  // Paginator
   bot.action("back", ctx => ctx.scene.reenter());
   bot.action(/changePage (.+)/, paginator.changePageAction);
+  // Book
+  bot.action("take", book.actions.take);
+  bot.action("return", book.actions.return);
+  bot.action("returnTaken", book.actions.returnTaken);
+  bot.action("edit", book.actions.edit);
+  bot.action("archiveCheck", book.actions.archiveCheck);
+  bot.action("archive", book.actions.archive);
 }
 
 module.exports = { startSceneHandler };

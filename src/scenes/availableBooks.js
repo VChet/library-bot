@@ -4,6 +4,7 @@ const { Extra } = require("telegraf");
 const { Book } = require("../db/Book");
 const { replyWithError } = require("../components/error");
 const { paginator } = require("../components/paginator");
+const { book } = require("../components/book");
 const { declOfNum } = require("../helpers");
 
 const availableBooksScene = new Scene("availableBooksScene");
@@ -39,36 +40,8 @@ availableBooksScene.action(/get (.+)/, (ctx) => {
   ctx.scene.session.selected = bookData;
   return ctx.editMessageText(
     `Выбранная книга: ${bookData.name_author}.\nРаздел "${bookData.category.name}"`,
-    Extra.HTML().markup(m =>
-      m.inlineKeyboard([
-        [
-          m.callbackButton("Взять", "take")
-        ], [
-          m.callbackButton("Назад к списку", "back"),
-          m.callbackButton("В меню", "menu")
-        ]
-      ])
-    )
+    book.keyboard(ctx, { text: "Взять книгу", action: "take" })
   );
-});
-
-availableBooksScene.action("take", ctx => {
-  const bookId = ctx.scene.session.selected._id;
-  const userId = ctx.session.user._id;
-
-  Book.changeUser(bookId, userId)
-    .then(book => {
-      ctx.editMessageText(
-        `Теперь книга "${book.name}" закреплена за вами!`,
-        Extra.HTML().markup(m =>
-          m.inlineKeyboard([
-            m.callbackButton("Назад к списку", "back"),
-            m.callbackButton("В меню", "menu")
-          ])
-        )
-      );
-    })
-    .catch(error => replyWithError(ctx, error));
 });
 
 module.exports = {

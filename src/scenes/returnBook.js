@@ -54,23 +54,6 @@ returnBookScene.action(/get (.+)/, ctx => {
   );
 });
 
-returnBookScene.action("return", ctx => {
-  const bookId = ctx.scene.session.selected._id;
-  Book.clearUser(bookId)
-    .then(book => {
-      ctx.editMessageText(
-        `Вы вернули книгу "${book.name}". Спасибо!`,
-        Extra.HTML().markup(m =>
-          m.inlineKeyboard([
-            m.callbackButton("Назад к списку", "back"),
-            m.callbackButton("В меню", "menu")
-          ])
-        )
-      );
-    })
-    .catch(error => replyWithError(ctx, error));
-});
-
 module.exports = {
   returnBookScene
 };

@@ -11,8 +11,13 @@ function titleCase(string) {
   return string.trim()[0].toUpperCase() + string.slice(1);
 }
 
+function hideButton(ctx) {
+  return ctx.session.user.role !== "Admin";
+}
+
 module.exports = {
   declOfNum,
   removeBreaks,
-  titleCase
+  titleCase,
+  hideButton
 };

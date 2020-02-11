@@ -2,14 +2,12 @@ const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
 const { Book } = require("../db/Book");
-const { User } = require("../db/User");
 const { replyWithError } = require("../components/error");
 const { paginator } = require("../components/paginator");
-const { declOfNum } = require("../helpers");
+const { book } = require("../components/book");
+const { declOfNum, hideButton } = require("../helpers");
 
 const searchBookScene = new Scene("searchBookScene");
-
-const hideButton = (ctx) => ctx.session.user.role !== "Admin";
 
 searchBookScene.enter(ctx => {
   ctx.editMessageText(
@@ -58,19 +56,7 @@ searchBookScene.action(/get (.+)/, (ctx) => {
       const response = `Вернуть "${bookData.name_author}"?\nРаздел "${bookData.category.name}"`;
       return ctx.editMessageText(
         response,
-        Extra.HTML().markup(m =>
-          m.inlineKeyboard([
-            [
-              m.callbackButton("Вернуть книгу", "return")
-            ], [
-              m.callbackButton("⚠️ Изменить", "edit", hideButton(ctx)),
-              m.callbackButton("⚠️ В архив", "archiveCheck", hideButton(ctx))
-            ], [
-              m.callbackButton("Искать ещё", "back"),
-              m.callbackButton("В меню", "menu")
-            ]
-          ])
-        )
+        book.keyboard(ctx, { text: "Вернуть книгу", action: "return" })
       );
     }
 
@@ -94,110 +80,9 @@ searchBookScene.action(/get (.+)/, (ctx) => {
   } else {
     ctx.editMessageText(
       `Выбранная книга: ${bookData.name_author}.\nРаздел "${bookData.category.name}"`,
-      Extra.HTML().markup(m =>
-        m.inlineKeyboard([
-          [
-            m.callbackButton("Взять книгу", "take")
-          ], [
-            m.callbackButton("⚠️ Изменить", "edit", hideButton(ctx)),
-            m.callbackButton("⚠️ В архив", "archiveCheck", hideButton(ctx))
-          ], [
-            m.callbackButton("Искать ещё", "back"),
-            m.callbackButton("В меню", "menu")
-          ]
-        ])
-      )
+      book.keyboard(ctx, { text: "Взять книгу", action: "take" })
     );
   }
-});
-
-searchBookScene.action("return", ctx => {
-  const bookId = ctx.scene.session.selected._id;
-  Book.clearUser(bookId)
-    .then(book => {
-      ctx.editMessageText(
-        `Вы вернули книгу "${book.name_author}". Спасибо!`,
-        Extra.HTML().markup(m =>
-          m.inlineKeyboard([
-            m.callbackButton("Искать ещё", "back"),
-            m.callbackButton("В меню", "menu")
-          ])
-        )
-      );
-    })
-    .catch(error => replyWithError(ctx, error));
-});
-
-searchBookScene.action("returnTaken", ctx => {
-  Book.clearTaken(ctx.scene.session.selected._id)
-    .then(book => {
-      ctx.editMessageText(
-        `Книга "${book.name}" возвращена в библиотеку`,
-        Extra.HTML().markup(m =>
-          m.inlineKeyboard([
-            m.callbackButton("Искать ещё", "back"),
-            m.callbackButton("В меню", "menu")
-          ])
-        )
-      );
-    })
-    .catch(error => replyWithError(ctx, error));
-});
-
-searchBookScene.action("take", ctx => {
-  const bookId = ctx.scene.session.selected._id;
-  const userId = ctx.session.user._id;
-
-  Book.changeUser(bookId, userId)
-    .then(book => {
-      ctx.editMessageText(
-        `Теперь книга "${book.name}" закреплена за вами!`,
-        Extra.HTML().markup(m =>
-          m.inlineKeyboard([
-            m.callbackButton("Искать ещё", "back"),
-            m.callbackButton("В меню", "menu")
-          ])
-        )
-      );
-    })
-    .catch(error => replyWithError(ctx, error));
-});
-
-searchBookScene.action("archiveCheck", ctx => {
-  ctx.editMessageText(
-    `Архивировать "${ctx.scene.session.selected.name}"? Книга будет недоступна и перестанет отображаться в поиске. Внимание, это действие необратимо!`,
-    Extra.HTML().markup(m =>
-      m.inlineKeyboard([
-        [m.callbackButton("Понятно, в архив!", "archive")],
-        [
-          m.callbackButton("Вернуться в поиск", "back"),
-          m.callbackButton("В меню", "menu")
-        ]
-      ])
-    )
-  );
-});
-
-searchBookScene.action("edit", ctx => {
-  ctx.session.selectedBook = ctx.scene.session.selected;
-  ctx.scene.leave();
-  return ctx.scene.enter("editBookScene");
-});
-
-searchBookScene.action("archive", ctx => {
-  Book.archive(ctx.scene.session.selected._id)
-    .then(book => {
-      ctx.editMessageText(
-        `Книга "${book.name}" добавлена в архив`,
-        Extra.HTML().markup(m =>
-          m.inlineKeyboard([
-            m.callbackButton("Вернуться в поиск", "back"),
-            m.callbackButton("В меню", "menu")
-          ])
-        )
-      );
-    })
-    .catch(error => replyWithError(ctx, error));
 });
 
 module.exports = {

@@ -1,10 +1,10 @@
 const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
-const { declOfNum } = require("../helpers");
 const { Book } = require("../db/Book");
-const { paginator } = require("../components/paginator");
 const { replyWithError } = require("../components/error");
+const { paginator } = require("../components/paginator");
+const { declOfNum, hideButton } = require("../helpers");
 
 const unavailableBooksScene = new Scene("unavailableBooksScene");
 
@@ -44,8 +44,12 @@ unavailableBooksScene.action(/get (.+)/, (ctx) => {
     `${bookData.name_author}. Сейчас у ${user}`,
     Extra.HTML().markup(m =>
       m.inlineKeyboard([
-        m.callbackButton("Назад к списку", "back"),
-        m.callbackButton("В меню", "menu")
+        [
+          m.callbackButton("Назад к списку", "back"),
+          m.callbackButton("В меню", "menu")
+        ], [
+          m.callbackButton("⚠️ Книга была возвращена", "returnTaken", hideButton(ctx) && bookData.taken_by)
+        ]
       ])
     )
   );

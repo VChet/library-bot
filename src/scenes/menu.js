@@ -11,7 +11,7 @@ menuScene.enter(ctx => {
     const buttons = [
       [
         m.callbackButton("Поиск", "search"),
-        m.callbackButton("Вернуть книгу", "return")
+        m.callbackButton("Вернуть книгу", "taken")
       ], [
         m.callbackButton("Доступные книги", "available"),
         m.callbackButton("Недоступные книги", "unavailable")
