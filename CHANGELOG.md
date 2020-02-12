@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/VChet/library-bot/compare/v1.3.2...v1.4.0) (2020-02-12)
+
+
+### Features
+
+* **book:** add action with history of book holders ([b71c414](https://github.com/VChet/library-bot/commit/b71c414551bbdf2d575325209947d3db485a2df8)), closes [#8](https://github.com/VChet/library-bot/issues/8)
+
 ### [1.3.2](https://github.com/VChet/library-bot/compare/v1.3.1...v1.3.2) (2020-02-06)
 
 
