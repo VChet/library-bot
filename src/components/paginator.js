@@ -42,17 +42,17 @@ const paginator = {
         if (currentPage === 1) {
           keyboard.push([
             Markup.callbackButton("В меню", "menu"),
-            m.callbackButton("Вперед", "changePage next")
+            m.callbackButton("➡️", "changePage next")
           ]);
         } else if (currentPage > 1 && currentPage * 10 < itemsLength) {
           keyboard.push([
-            m.callbackButton("Назад", "changePage previous"),
+            m.callbackButton("⬅️", "changePage previous"),
             Markup.callbackButton("В меню", "menu"),
-            m.callbackButton("Вперед", "changePage next")
+            m.callbackButton("➡️", "changePage next")
           ]);
         } else if (currentPage * 10 >= itemsLength) {
           keyboard.push([
-            m.callbackButton("Назад", "changePage previous"),
+            m.callbackButton("⬅️", "changePage previous"),
             Markup.callbackButton("В меню", "menu")
           ]);
         }
