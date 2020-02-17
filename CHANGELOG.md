@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/VChet/library-bot/compare/v1.4.0...v1.4.1) (2020-02-17)
+
+
+### Bug Fixes
+
+* **about:** add repository button to /about command output ([0560a83](https://github.com/VChet/library-bot/commit/0560a83cafad348063ebe9dc3df372f0334fa874))
+* **paginator:** replace paginator buttons text with arrow emoji ([6459f4d](https://github.com/VChet/library-bot/commit/6459f4dd95f9d1ceb77b9b72208e16548a0605d2))
+
 ## [1.4.0](https://github.com/VChet/library-bot/compare/v1.3.2...v1.4.0) (2020-02-12)
 
 
@@ -39,7 +47,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **addBook:** fix wrong function name ([fe285b6](https://github.com/VChet/library-bot/commit/fe285b6fbc6b7d16df92cd9bc6b1cc7ea0f7d4a1))
 
-## [1.2.1](https://github.com/VChet/library-bot/compare/v1.2.0...v1.2.1) (2020-01-29)
+### [1.2.1](https://github.com/VChet/library-bot/compare/v1.2.0...v1.2.1) (2020-01-29)
 
 
 ### Bug Fixes
@@ -76,7 +84,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-## [1.0.1](https://github.com/VChet/library-bot/compare/v1.0.0...v1.0.1) (2020-01-22)
+### [1.0.1](https://github.com/VChet/library-bot/compare/v1.0.0...v1.0.1) (2020-01-22)
 
 
 ### Bug Fixes
