@@ -1,6 +1,7 @@
 const Stage = require("telegraf/stage");
+const { Extra, Markup } = require("telegraf");
 
-const { version } = require("../package.json");
+const { version, author, repository } = require("../package.json");
 const { paginator } = require("./components/paginator");
 const { book } = require("./components/book");
 
@@ -34,11 +35,20 @@ function isAdmin(ctx, next) {
   ctx.reply("Вам недоступна эта команда");
 }
 
+function aboutMeesage(ctx) {
+  ctx.reply(
+    `Library Bot ${version}. Автор @${author}`,
+    Extra.HTML().markup(m => m.inlineKeyboard(
+      [m.urlButton("Репозиторий", repository.url)]
+    ))
+  );
+}
+
 function startSceneHandler(bot) {
   bot.use(stage.middleware());
 
   bot.start(ctx => ctx.scene.enter("menuScene"));
-  bot.command("about", (ctx) => ctx.reply(`Library Bot ${version}`));
+  bot.command("about", aboutMeesage);
 
   bot.action("menu", ctx => ctx.scene.enter("menuScene"));
   bot.action("search", ctx => ctx.scene.enter("searchBookScene"));

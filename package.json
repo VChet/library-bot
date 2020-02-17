@@ -9,7 +9,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/VChet/library-bot.git"
+    "url": "https://github.com/VChet/library-bot.git"
   },
   "main": "index.js",
   "scripts": {
