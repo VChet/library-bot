@@ -22,6 +22,9 @@ async function middleware(ctx, next) {
     // Update session data
     let user = await User.isExists(ctx.from.id);
     if (!user) {
+      if (!ctx.from.username) {
+        return ctx.reply("Для использования бота необходимо установить юзернейм");
+      }
       const userData = {
         telegram_id: ctx.from.id,
         first_name: ctx.from.first_name,
