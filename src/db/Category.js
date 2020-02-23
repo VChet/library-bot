@@ -34,5 +34,11 @@ exports.Category = {
       if (error) reject(error);
       resolve(category);
     });
-  })
+  }),
+  delete: (categoryId) => new Promise((resolve, reject) => {
+    Category.deleteOne(categoryId, (error, category) => {
+      if (error) reject(error);
+      resolve(category);
+    });
+  }),
 };
