@@ -1,4 +1,5 @@
 const Telegraf = require("telegraf");
+const updateLogger = require("telegraf-update-logger");
 const session = require("telegraf/session");
 
 const config = require("./config");
@@ -14,6 +15,7 @@ if (config.useProxy) {
 }
 
 const bot = new Telegraf(config.token, proxy);
+bot.use(updateLogger({ colors: true }));
 bot.use(session());
 bot.use(middleware);
 bot.launch().then(() => {
