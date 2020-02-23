@@ -57,6 +57,15 @@ usersScene.action("promote", ctx => {
   }
   User.changeRole(selectedUser, newRole)
     .then(user => {
+      if (selectedUser.chat_id && newRole === "User") {
+        ctx.telegram.sendMessage(
+          selectedUser.chat_id,
+          "Ваш аккаунт подтвержден",
+          Extra.HTML().markup(m =>
+            m.inlineKeyboard([m.callbackButton("Меню", "menu")])
+          )
+        );
+      }
       ctx.editMessageText(
         `Пользователь ${user.full_name} теперь ${user.role}`,
         Extra.HTML().markup(m =>
