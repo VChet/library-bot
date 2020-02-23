@@ -27,6 +27,7 @@ async function middleware(ctx, next) {
       }
       const userData = {
         telegram_id: ctx.from.id,
+        chat_id: ctx.chat.id,
         first_name: ctx.from.first_name,
         last_name: ctx.from.last_name,
         username: ctx.from.username

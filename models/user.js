@@ -7,6 +7,11 @@ const schema = new Schema({
     required: true,
     unique: true
   },
+  chat_id: {
+    type: String,
+    required: true,
+    unique: true
+  },
   first_name: {
     type: String
   },
