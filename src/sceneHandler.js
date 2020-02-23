@@ -1,5 +1,5 @@
 const Stage = require("telegraf/stage");
-const { Extra, Markup } = require("telegraf");
+const { Extra } = require("telegraf");
 
 const { version, author, repository } = require("../package.json");
 const { paginator } = require("./components/paginator");
