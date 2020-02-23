@@ -61,7 +61,7 @@ bot.action("add", isAdmin, ctx => ctx.scene.enter("addBookScene"));
 bot.action("upload", isAdmin, ctx => ctx.scene.enter("uploadBooksScene"));
 
 // Paginator
-bot.action("back", ctx => ctx.scene.reenter());
+bot.action("back", ctx => ctx.scene.session.current ? ctx.scene.reenter() : ctx.scene.enter("menuScene"));
 bot.action(/changePage (.+)/, paginator.changePageAction);
 // Book
 bot.action("take", book.actions.take);
