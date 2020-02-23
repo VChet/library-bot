@@ -18,7 +18,9 @@ const uploadBooksScene = new Scene("uploadBooksScene");
 
 uploadBooksScene.enter(ctx => {
   ctx.editMessageText(
-    "Загрузите файл в формате xlsx",
+    "Загрузите файл в формате xlsx.\n\
+    Пропуск первых 2 строк\n\
+    Столбцы: Раздел|Название|Автор|Кому выдана",
     Extra.HTML().markup(m =>
       m.inlineKeyboard([m.callbackButton("Отмена", "menu")])
     )
