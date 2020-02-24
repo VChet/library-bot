@@ -7,16 +7,14 @@
 Uses Node.js, MongoDB, Telegraf.js
 
 ## Features
-* Search book
-* Borrow book
-* Return book
-* Validate user*
-* Add book*
-* Edit book*
-* Archive book*
-* Import books from excel file*
-
-<sub><sup>*available for admin role only</sup></sub>
+* Book borrowing/returning
+* List of book borrowers
+* List of available/taken books
+* Search by book name/author
+* User validation (requires account approval by another user)
+* Book editing (add new, edit, archive)
+* List of categories with a book count
+* Books import from excel file
 
 ## Usage
 1. Clone repository.
