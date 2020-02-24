@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/VChet/library-bot/compare/v1.4.1...v1.5.0) (2020-02-24)
+
+
+### Features
+
+* **category:** add 'remove category' button ([6659cd7](https://github.com/VChet/library-bot/commit/6659cd7b0ccd8b283a3cf3208cf01f6606233713)), closes [#10](https://github.com/VChet/library-bot/issues/10)
+* **logger:** add logger ([753adbc](https://github.com/VChet/library-bot/commit/753adbc57aa602cda0e945acb5358d72fb38efc3))
+* **user:** notify user on account approval ([8fd0f42](https://github.com/VChet/library-bot/commit/8fd0f429083db44f502a5216a7c7d49a7cf3a710)), closes [#9](https://github.com/VChet/library-bot/issues/9)
+* **user:** store chat id ([b07ae5e](https://github.com/VChet/library-bot/commit/b07ae5e8e2e64b64017001f2733609ab41319541))
+
+
+### Bug Fixes
+
+* **middleware:** handle empty username ([ffbc285](https://github.com/VChet/library-bot/commit/ffbc2858e837cde01fd3857fbef27cc4076bfd35))
+* **sceneHandler:** handle 'back' action when scene session is empty ([22e9813](https://github.com/VChet/library-bot/commit/22e9813f680f5fdcca98fa67d7c59471d70a22e8))
+* **uploadBooks:** add text with current parser settings ([fa43b88](https://github.com/VChet/library-bot/commit/fa43b88307b888bc82b7227b16b25684c67c56ac))
+
 ### [1.4.1](https://github.com/VChet/library-bot/compare/v1.4.0...v1.4.1) (2020-02-17)
 
 
