@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 
 const schema = new Schema({
   name: {
@@ -30,14 +31,14 @@ const schema = new Schema({
   }
 });
 
-schema.virtual("name_author").get(function() {
+schema.virtual("name_author").get(function getAuthor() {
   let string = this.name;
   if (this.author !== "-") string += ` [${this.author}]`;
   return string;
 });
 
 // Check combination of name and author fields to be unique
-schema.index({ "name": 1, "author": 1 }, { "unique": true });
+schema.index({ name: 1, author: 1 }, { unique: true });
 // Indexate name and author fields for search
 schema.index({ name: "text", author: "text" }, { default_language: "ru" });
 exports.Book = mongoose.model("Book", schema);

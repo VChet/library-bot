@@ -17,10 +17,10 @@ editBookScene.enter(ctx => {
     );
   }
   ctx.scene.session.bookData = ctx.session.selectedBook;
-  const bookData = ctx.scene.session.bookData;
+  const { author, name, category } = ctx.scene.session.bookData;
 
   let response = "Введите данные о книге в формате \nАвтор\nНазвание\nРаздел\n\n";
-  response += `Текущая книга:\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nРаздел: ${bookData.category.name}`;
+  response += `Текущая книга:\nАвтор: ${author}\nНазвание: ${name}\nРаздел: ${category.name}`;
 
   ctx.editMessageText(
     response,
@@ -51,13 +51,17 @@ editBookScene.on("message", async (ctx) => {
     );
   }
 
-  ctx.scene.session.bookData.author = arr[0];
-  ctx.scene.session.bookData.name = arr[1];
-  ctx.scene.session.bookData.category = category;
-  const bookData = ctx.scene.session.bookData;
+  ctx.scene.session.bookData = {
+    ...ctx.scene.session.bookData,
+    author: arr[0],
+    name: arr[1],
+    category
+  };
+
+  const { author, name } = ctx.scene.session.bookData;
 
   ctx.reply(
-    `Все верно?\nАвтор: ${bookData.author}\nНазвание: ${bookData.name}\nРаздел: ${bookData.category.name}`,
+    `Все верно?\nАвтор: ${author}\nНазвание: ${name}\nРаздел: ${category.name}`,
     Extra.HTML().markup(m =>
       m.inlineKeyboard([
         m.callbackButton("Да", "edit"),
@@ -68,8 +72,7 @@ editBookScene.on("message", async (ctx) => {
 });
 
 editBookScene.action("edit", ctx => {
-  const bookData = ctx.scene.session.bookData;
-  Book.changeData(bookData)
+  Book.changeData(ctx.scene.session.bookData)
     .then(book => {
       ctx.editMessageText(
         `Книга "${book.name}" обновлена`,

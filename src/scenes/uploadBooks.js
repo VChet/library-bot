@@ -3,6 +3,7 @@ const { Extra } = require("telegraf");
 
 const axios = require("axios");
 const XLSX = require("xlsx");
+const { socksAgent } = require("../components/socksAgent");
 
 const config = require("../../config");
 const { Book } = require("../db/Book");
@@ -15,63 +16,6 @@ const {
 } = require("../helpers");
 
 const uploadBooksScene = new Scene("uploadBooksScene");
-
-uploadBooksScene.enter(ctx => {
-  ctx.editMessageText(
-    "Загрузите файл в формате xlsx.\n\
-    Пропуск первых 2 строк\n\
-    Столбцы: Раздел|Название|Автор|Кому выдана",
-    Extra.HTML().markup(m =>
-      m.inlineKeyboard([m.callbackButton("Отмена", "menu")])
-    )
-  );
-});
-
-uploadBooksScene.on("document", ctx => {
-  if (ctx.message.document.mime_type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-    return ctx.reply(
-      "Данный файл не является xlsx",
-      Extra.HTML().markup(m =>
-        m.inlineKeyboard([
-          m.callbackButton("Загрузить снова", "back"),
-          m.callbackButton("Отмена", "menu")
-        ])
-      ));
-  }
-
-  ctx.telegram.getFile(ctx.message.document.file_id)
-    .then(response => {
-      let httpsAgent;
-      if (config.useProxy) {
-        const { socksAgent } = require("../components/socksAgent");
-        httpsAgent = socksAgent;
-      }
-      axios({
-        url: `https://api.telegram.org/file/bot${config.token}/${response.file_path}`,
-        method: "GET",
-        responseType: "arraybuffer",
-        httpsAgent
-      })
-        .then(async (file) => {
-          const books = await parseXLSX(file.data);
-          Book.addMany(books)
-            .then(result => {
-              const response = `Из файла "${ctx.message.document.file_name}" добавлено ${result.length} ${declOfNum(result.length, ["книга", "книги", "книг"])}`;
-              ctx.reply(
-                response,
-                Extra.HTML().markup(m =>
-                  m.inlineKeyboard([
-                    m.callbackButton("Добавить ещё", "back"),
-                    m.callbackButton("В меню", "menu"),
-                  ])
-                )
-              );
-            })
-            .catch(error => replyWithError(ctx, error));
-        })
-        .catch(error => replyWithError(ctx, error));
-    });
-});
 
 async function parseXLSX(fileData) {
   const wb = XLSX.read(fileData);
@@ -104,6 +48,62 @@ async function parseXLSX(fileData) {
   }
   return formatted;
 }
+
+uploadBooksScene.enter(ctx => {
+  ctx.editMessageText(
+    "Загрузите файл в формате xlsx.\n\
+    Пропуск первых 2 строк\n\
+    Столбцы: Раздел|Название|Автор|Кому выдана",
+    Extra.HTML().markup(m =>
+      m.inlineKeyboard([m.callbackButton("Отмена", "menu")])
+    )
+  );
+});
+
+uploadBooksScene.on("document", ctx => {
+  const { mime_type: mimeType, file_id: fileId, file_name: fileName } = ctx.message.document;
+  if (mimeType !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+    return ctx.reply(
+      "Данный файл не является xlsx",
+      Extra.HTML().markup(m =>
+        m.inlineKeyboard([
+          m.callbackButton("Загрузить снова", "back"),
+          m.callbackButton("Отмена", "menu")
+        ])
+      ));
+  }
+
+  ctx.telegram.getFile(fileId)
+    .then(fileData => {
+      let httpsAgent;
+      if (config.useProxy) { httpsAgent = socksAgent; }
+      axios({
+        url: `https://api.telegram.org/file/bot${config.token}/${fileData.file_path}`,
+        method: "GET",
+        responseType: "arraybuffer",
+        httpsAgent
+      })
+        .then(async (file) => {
+          const books = await parseXLSX(file.data);
+          Book.addMany(books)
+            .then(result => {
+              const bookCount = `${result.length} ${declOfNum(result.length, ["книга", "книги", "книг"])}`;
+              const response = `Из файла "${fileName}" добавлено ${bookCount}`;
+              ctx.reply(
+                response,
+                Extra.HTML().markup(m =>
+                  m.inlineKeyboard([
+                    m.callbackButton("Добавить ещё", "back"),
+                    m.callbackButton("В меню", "menu"),
+                  ])
+                )
+              );
+            })
+            .catch(error => replyWithError(ctx, error));
+        })
+        .catch(error => replyWithError(ctx, error));
+    });
+});
 
 module.exports = {
   uploadBooksScene

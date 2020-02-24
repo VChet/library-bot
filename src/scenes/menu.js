@@ -2,6 +2,7 @@ const Scene = require("telegraf/scenes/base");
 const { Extra } = require("telegraf");
 
 const { paginator } = require("../components/paginator");
+
 const menuScene = new Scene("menuScene");
 
 menuScene.enter(ctx => {

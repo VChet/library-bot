@@ -29,9 +29,9 @@ exports.User = {
         resolve(user);
       });
   }),
-  changeRole: (user, role) => new Promise((resolve, reject) => {
+  changeRole: (userData, role) => new Promise((resolve, reject) => {
     User.findByIdAndUpdate(
-      user,
+      userData,
       { $set: { role } },
       { new: true },
       (error, user) => {

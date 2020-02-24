@@ -49,7 +49,7 @@ searchBookScene.on("message", ctx => {
 
 searchBookScene.action(/get (.+)/, (ctx) => {
   const bookId = ctx.match[1];
-  const bookData = ctx.scene.session.results.find(book => book._id.toString() === bookId.toString());
+  const bookData = ctx.scene.session.results.find(result => result._id.toString() === bookId.toString());
   ctx.scene.session.selected = bookData;
   if (bookData.user || bookData.taken_by) {
     if (bookData.user && bookData.user.toString() === ctx.session.user._id.toString()) {
@@ -77,12 +77,12 @@ searchBookScene.action(/get (.+)/, (ctx) => {
         ])
       )
     );
-  } else {
-    ctx.editMessageText(
-      `Выбранная книга: ${bookData.name_author}.\nРаздел "${bookData.category.name}"`,
-      book.keyboard(ctx, { text: "Взять книгу", action: "take" })
-    );
   }
+
+  ctx.editMessageText(
+    `Выбранная книга: ${bookData.name_author}.\nРаздел "${bookData.category.name}"`,
+    book.keyboard(ctx, { text: "Взять книгу", action: "take" })
+  );
 });
 
 module.exports = {

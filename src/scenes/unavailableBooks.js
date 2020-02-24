@@ -18,9 +18,9 @@ unavailableBooksScene.enter(ctx => {
       if (!books.length) {
         return ctx.editMessageText(
           "Все книги в библиотеке!",
-          Extra.HTML().markup(m => {
-            return m.inlineKeyboard([m.callbackButton("В меню", "menu")]);
-          })
+          Extra.HTML().markup(m =>
+            m.inlineKeyboard([m.callbackButton("В меню", "menu")])
+          )
         );
       }
 

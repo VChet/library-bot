@@ -49,8 +49,10 @@ addBookScene.on("message", async (ctx) => {
   Book.isExists(bookData.author, bookData.name)
     .then(book => {
       if (book) {
+        let response = `В библиотеке уже есть книга автора "${book.author}" с названием "${book.name}"`;
+        response += "\nЕсли это еще один экземпляр - укажите это в названии";
         return ctx.reply(
-          `В библиотеке уже есть книга автора "${book.author}" с названием "${book.name}"\nЕсли это еще один экземпляр - укажите это в названии`,
+          response,
           Extra.HTML().markup(m =>
             m.inlineKeyboard([
               m.callbackButton("Попробовать снова", "back"),
@@ -74,8 +76,7 @@ addBookScene.on("message", async (ctx) => {
 });
 
 addBookScene.action("add", ctx => {
-  const bookData = ctx.scene.session.bookData;
-  Book.addOne(bookData)
+  Book.addOne(ctx.scene.session.bookData)
     .then(book => {
       ctx.editMessageText(
         `Книга "${book.name}" добавлена!`,

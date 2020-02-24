@@ -2,6 +2,7 @@ const { Category } = require("./category");
 const { Book } = require("./book");
 const { User } = require("./user");
 const config = require("../config");
+const { books: defaultBooks } = require("./data_books");
 
 async function initCollections() {
   if (process.env.NODE_ENV === "test") return;
@@ -10,19 +11,18 @@ async function initCollections() {
     const category = await Category.findOne({}).lean();
     if (category) return category;
     const newCategory = new Category({ name: "Неотсортированные" });
-    return await newCategory.save();
+    return newCategory.save();
   }
 
   async function createBooks(category) {
     const books = await Book.find({}).lean();
     if (books && books.length !== 0) return books;
 
-    const { books: defaultBooks } = require("./data_books");
     defaultBooks.forEach(book => {
       book.category = category;
       return book;
     });
-    return await Book.insertMany(defaultBooks);
+    return Book.insertMany(defaultBooks);
   }
 
   async function createAdmin() {
@@ -30,7 +30,7 @@ async function initCollections() {
     if (user) return user;
 
     const newAdmin = new User(config.defaultAdmin);
-    return await newAdmin.save();
+    return newAdmin.save();
   }
 
   const category = await createCategory();

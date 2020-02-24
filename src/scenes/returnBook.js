@@ -19,7 +19,7 @@ returnBookScene.enter(ctx => {
       if (books.length) {
         ctx.scene.session.userBooks = books;
         return ctx.editMessageText(
-          `У вас ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}. Выберите книгу, которую хотите вернуть:`,
+          `У вас ${books.length} ${declOfNum(books.length, ["книга", "книги", "книг"])}`,
           paginator.keyboard(ctx, books)
         );
       }

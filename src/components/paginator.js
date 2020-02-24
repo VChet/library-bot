@@ -6,12 +6,13 @@ const booksKeyboardScenes = ["availableBooksScene", "unavailableBooksScene", "se
 const usersKeyboardScenes = ["usersScene"];
 const categoryKeyboardScenes = ["categoriesScene"];
 
-const isTaken = book => book.user || book.taken_by ? "❌" : "";
+const isTaken = book => (book.user || book.taken_by ? "❌" : "");
 
 const paginator = {
   page: 1,
-  keyboard(ctx, items) {
+  keyboard(ctx, data) {
     const currentPage = paginator.page;
+    let items = data;
 
     return Extra.HTML().markup(m => {
       const keyboard = [];
@@ -25,12 +26,14 @@ const paginator = {
             `${item.name_author} ${isTaken(item)}`,
             `get ${item._id}`
           )];
-        } else if (usersKeyboardScenes.includes(ctx.scene.session.current)) {
+        }
+        if (usersKeyboardScenes.includes(ctx.scene.session.current)) {
           return [m.callbackButton(
             `${item.full_name} (${item.role})`,
             `get ${item._id}`
           )];
-        } else if (categoryKeyboardScenes.includes(ctx.scene.session.current)) {
+        }
+        if (categoryKeyboardScenes.includes(ctx.scene.session.current)) {
           return [m.callbackButton(
             item.name,
             `get ${item._id}`
@@ -68,8 +71,8 @@ const paginator = {
   changePageAction(ctx) {
     const items = ctx.scene.session.results;
     ctx.match[1] === "next" ?
-      paginator.page++ :
-      paginator.page--;
+      paginator.page += 1 :
+      paginator.page -= 1;
 
     const currentPage = paginator.page;
     const firstItemsBorder = 1 + (currentPage - 1) * 10;
@@ -87,13 +90,17 @@ const paginator = {
         newMessage = `Найдено ${items.length} ${declOfNum(items.length, ["книга", "книги", "книг"])}`;
         break;
       case ("returnBookScene"):
-        newMessage = `У вас ${items.length} ${declOfNum(items.length, ["книга", "книги", "книг"])}. Выберите книгу, которую хотите вернуть`;
+        newMessage = `У вас ${items.length} ${declOfNum(items.length, ["книга", "книги", "книг"])}`;
         break;
       case ("usersScene"):
+        // eslint-disable-next-line max-len
         newMessage = `В базе ${items.length} ${declOfNum(items.length, ["пользователь", "пользователя", "пользователей"])}`;
         break;
       case ("categoriesScene"):
         newMessage = `В базе ${items.length} ${declOfNum(items.length, ["раздел", "раздела", "разделов"])}`;
+        break;
+      default:
+        newMessage = `Доступно ${items.length} ${declOfNum(items.length, ["запись", "записи", "записей"])}`;
         break;
     }
     newMessage += `\n(показаны с ${firstItemsBorder} по ${secondItemsBorder})`;

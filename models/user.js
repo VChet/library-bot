@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 
 const schema = new Schema({
   telegram_id: {
@@ -34,9 +35,9 @@ const schema = new Schema({
   }
 });
 
-schema.virtual("full_name").get(function() {
+schema.virtual("full_name").get(function getFullname() {
   let fullname = this.first_name;
-  if (this.last_name) fullname += " " + this.last_name;
+  if (this.last_name) fullname += ` ${this.last_name}`;
   return fullname;
 });
 

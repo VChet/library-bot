@@ -1,16 +1,17 @@
+/* eslint-disable global-require */
 const Telegraf = require("telegraf");
 const updateLogger = require("telegraf-update-logger");
 const session = require("telegraf/session");
 
 const config = require("./config");
 const { connectToDB } = require("./database");
+const { socksAgent } = require("./src/components/socksAgent");
 const { middleware } = require("./src/middleware");
 
 connectToDB();
 
 let proxy = {};
 if (config.useProxy) {
-  const { socksAgent } = require("./src/components/socksAgent");
   proxy = { telegram: { agent: socksAgent } };
 }
 

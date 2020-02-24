@@ -17,6 +17,7 @@ const { categoriesScene } = require("./scenes/categories");
 const { addBookScene } = require("./scenes/addBook");
 const { editBookScene } = require("./scenes/editBook");
 const { uploadBooksScene } = require("./scenes/uploadBooks");
+
 const scenes = [
   menuScene,
   searchBookScene,
@@ -61,7 +62,7 @@ bot.action("add", isAdmin, ctx => ctx.scene.enter("addBookScene"));
 bot.action("upload", isAdmin, ctx => ctx.scene.enter("uploadBooksScene"));
 
 // Paginator
-bot.action("back", ctx => ctx.scene.session.current ? ctx.scene.reenter() : ctx.scene.enter("menuScene"));
+bot.action("back", ctx => (ctx.scene.session.current ? ctx.scene.reenter() : ctx.scene.enter("menuScene")));
 bot.action(/changePage (.+)/, paginator.changePageAction);
 // Book
 bot.action("take", book.actions.take);

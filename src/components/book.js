@@ -6,7 +6,7 @@ const { Log } = require("../db/Log");
 const { replyWithError } = require("../components/error");
 const { hideButton } = require("../helpers");
 
-const book = {
+const bookComponent = {
   keyboard(ctx, button) {
     return Extra.HTML().markup(m =>
       m.inlineKeyboard([
@@ -93,8 +93,10 @@ const book = {
         .catch(error => replyWithError(ctx, error));
     },
     archiveCheck(ctx) {
+      let response = `Архивировать "${ctx.scene.session.selected.name}"?`;
+      response += "\nКнига будет недоступна и перестанет отображаться в поиске. Внимание, это действие необратимо!";
       ctx.editMessageText(
-        `Архивировать "${ctx.scene.session.selected.name}"?\nКнига будет недоступна и перестанет отображаться в поиске. Внимание, это действие необратимо!`,
+        response,
         Extra.HTML().markup(m =>
           m.inlineKeyboard([
             [m.callbackButton("Понятно, в архив!", "archive")],
@@ -112,10 +114,10 @@ const book = {
         .then(logs => {
           let response = "Нет записей";
           if (logs.length) {
-            const format = (date) => dayjs(date).format("DD-MM-YYYY");
-            response = logs.map((log) => {
-              return `[${format(log.taken)} ${format(log.returned)}] ${log.user.full_name} @${log.user.username}`;
-            }).join("\n");
+            const format = date => dayjs(date).format("DD-MM-YYYY");
+            response = logs.map(log =>
+              `[${format(log.taken)} ${format(log.returned)}] ${log.user.full_name} @${log.user.username}`
+            ).join("\n");
           }
 
           ctx.editMessageText(
@@ -133,4 +135,4 @@ const book = {
   }
 };
 
-module.exports = { book };
+module.exports = { book: bookComponent };

@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 console.log(`process.env.NODE_ENV: ${process.env.NODE_ENV}`);
 
 let overwriteConfig;
