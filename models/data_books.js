@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 exports.books = [{
   name: "Тысяча сияющих солнц",
   author: "Хоссейни Халед"

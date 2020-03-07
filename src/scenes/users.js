@@ -68,12 +68,7 @@ usersScene.action("promote", ctx => {
       }
       ctx.editMessageText(
         `Пользователь ${user.full_name} теперь ${user.role}`,
-        Extra.HTML().markup(m =>
-          m.inlineKeyboard([
-            m.callbackButton("Назад к списку", "back"),
-            m.callbackButton("В меню", "menu")
-          ])
-        )
+        paginator.basicMenu()
       );
     })
     .catch(error => replyWithError(ctx, error));
@@ -91,12 +86,7 @@ usersScene.action("demote", ctx => {
     .then(user => {
       ctx.editMessageText(
         `Пользователь ${user.full_name} теперь ${user.role}`,
-        Extra.HTML().markup(m =>
-          m.inlineKeyboard([
-            m.callbackButton("Назад к списку", "back"),
-            m.callbackButton("В меню", "menu")
-          ])
-        )
+        paginator.basicMenu()
       );
     })
     .catch(error => replyWithError(ctx, error));

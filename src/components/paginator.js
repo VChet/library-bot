@@ -106,6 +106,14 @@ const paginator = {
     newMessage += `\n(показаны с ${firstItemsBorder} по ${secondItemsBorder})`;
 
     return ctx.editMessageText(newMessage, paginator.keyboard(ctx, items));
+  },
+  basicMenu() {
+    return Extra.HTML().markup(m =>
+      m.inlineKeyboard([
+        m.callbackButton("Назад", "back"),
+        m.callbackButton("В меню", "menu")
+      ])
+    );
   }
 };
 

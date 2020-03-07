@@ -4,6 +4,7 @@ const dayjs = require("dayjs");
 const { Book } = require("../db/Book");
 const { Log } = require("../db/Log");
 const { replyWithError } = require("../components/error");
+const { paginator } = require("../components/paginator");
 const { hideButton } = require("../helpers");
 
 const bookComponent = {
@@ -31,12 +32,7 @@ const bookComponent = {
         .then(book => {
           ctx.editMessageText(
             `Теперь книга "${book.name}" закреплена за вами!`,
-            Extra.HTML().markup(m =>
-              m.inlineKeyboard([
-                m.callbackButton("Назад", "back"),
-                m.callbackButton("В меню", "menu")
-              ])
-            )
+            paginator.basicMenu()
           );
         })
         .catch(error => replyWithError(ctx, error));
@@ -47,12 +43,7 @@ const bookComponent = {
         .then(book => {
           ctx.editMessageText(
             `Вы вернули книгу "${book.name_author}". Спасибо!`,
-            Extra.HTML().markup(m =>
-              m.inlineKeyboard([
-                m.callbackButton("Назад", "back"),
-                m.callbackButton("В меню", "menu")
-              ])
-            )
+            paginator.basicMenu()
           );
         })
         .catch(error => replyWithError(ctx, error));
@@ -62,12 +53,7 @@ const bookComponent = {
         .then(book => {
           ctx.editMessageText(
             `Книга "${book.name}" возвращена в библиотеку`,
-            Extra.HTML().markup(m =>
-              m.inlineKeyboard([
-                m.callbackButton("Назад", "back"),
-                m.callbackButton("В меню", "menu")
-              ])
-            )
+            paginator.basicMenu()
           );
         })
         .catch(error => replyWithError(ctx, error));
@@ -82,12 +68,7 @@ const bookComponent = {
         .then(book => {
           ctx.editMessageText(
             `Книга "${book.name}" добавлена в архив`,
-            Extra.HTML().markup(m =>
-              m.inlineKeyboard([
-                m.callbackButton("Назад", "back"),
-                m.callbackButton("В меню", "menu")
-              ])
-            )
+            paginator.basicMenu()
           );
         })
         .catch(error => replyWithError(ctx, error));
@@ -122,12 +103,7 @@ const bookComponent = {
 
           ctx.editMessageText(
             response,
-            Extra.HTML().markup(m =>
-              m.inlineKeyboard([
-                m.callbackButton("Назад", "back"),
-                m.callbackButton("В меню", "menu")
-              ])
-            )
+            paginator.basicMenu()
           );
         })
         .catch(error => replyWithError(ctx, error));

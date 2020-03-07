@@ -62,12 +62,7 @@ categoriesScene.action("delete", ctx => {
     .then(() => {
       ctx.editMessageText(
         `Категория удалена`,
-        Extra.HTML().markup(m =>
-          m.inlineKeyboard([
-            m.callbackButton("Назад к списку", "back"),
-            m.callbackButton("В меню", "menu")
-          ])
-        )
+        paginator.basicMenu()
       );
     })
     .catch(error => replyWithError(ctx, error));
