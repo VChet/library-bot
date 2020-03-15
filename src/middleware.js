@@ -1,4 +1,4 @@
-const { User } = require("../src/db/User");
+const { User } = require("./db/User");
 const { replyWithError } = require("./components/error");
 const config = require("../config");
 
