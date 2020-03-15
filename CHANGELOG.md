@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.1](https://github.com/VChet/library-bot/compare/v1.5.0...v1.5.1) (2020-03-15)
+
+
+### Bug Fixes
+
+* **log:** add log button to search and unavailable books scenes ([ab0aafe](https://github.com/VChet/library-bot/commit/ab0aafea50c63226d19395830547c9239b3826da))
+* **log:** fix output for empty returned date ([4175955](https://github.com/VChet/library-bot/commit/417595504b75293aae4eb031f1a27dea7a74c45b))
+
 ## [1.5.0](https://github.com/VChet/library-bot/compare/v1.4.1...v1.5.0) (2020-02-24)
 
 
