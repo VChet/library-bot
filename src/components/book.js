@@ -1,5 +1,4 @@
 const { Extra } = require("telegraf");
-const dayjs = require("dayjs");
 
 const { Book } = require("../db/Book");
 const { Log } = require("../db/Log");
@@ -95,9 +94,8 @@ const bookComponent = {
         .then(logs => {
           let response = "Нет записей";
           if (logs.length) {
-            const format = date => dayjs(date).format("DD-MM-YYYY");
             response = logs.map(log =>
-              `[${format(log.taken)} ${format(log.returned)}] ${log.user.full_name} @${log.user.username}`
+              `[${log.dates}] ${log.user.full_name} @${log.user.username}`
             ).join("\n");
           }
 
