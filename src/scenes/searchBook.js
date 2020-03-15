@@ -72,6 +72,7 @@ searchBookScene.action(/get (.+)/, (ctx) => {
             m.callbackButton("Искать ещё", "back"),
             m.callbackButton("В меню", "menu")
           ], [
+            m.callbackButton("⚠️ История", "logs", hideButton(ctx)),
             m.callbackButton("⚠️ Книга была возвращена", "returnTaken", hideButton(ctx) && bookData.taken_by)
           ]
         ])
