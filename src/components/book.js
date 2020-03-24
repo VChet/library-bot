@@ -2,8 +2,8 @@ const { Extra } = require("telegraf");
 
 const { Book } = require("../db/Book");
 const { Log } = require("../db/Log");
-const { replyWithError } = require("../components/error");
-const { paginator } = require("../components/paginator");
+const { replyWithError } = require("./error");
+const { paginator } = require("./paginator");
 const { hideButton } = require("../helpers");
 
 const bookComponent = {
