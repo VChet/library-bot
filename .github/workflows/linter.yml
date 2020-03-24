@@ -1,15 +1,19 @@
-name: Linter
-
+name: linter
 on: [push, pull_request]
 
 jobs:
   eslint:
-    name: Run eslint
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macOS-latest]
+        node: [10, 12]
+
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
       with:
-        node-version: '12.x'
+        node-version: ${{ matrix.node }}
     - run: npm install
     - run: npm test
