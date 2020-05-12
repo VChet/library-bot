@@ -10,7 +10,6 @@ const schema = new Schema({
   },
   chat_id: {
     type: String,
-    required: true,
     unique: true
   },
   first_name: {
