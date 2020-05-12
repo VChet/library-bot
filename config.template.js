@@ -1,19 +1,3 @@
-/* eslint-disable global-require */
-console.log(`process.env.NODE_ENV: ${process.env.NODE_ENV}`);
-
-let overwriteConfig;
-
-switch (process.env.NODE_ENV) {
-  case "test":
-    overwriteConfig = require("./config.test");
-    break;
-  case "production":
-    overwriteConfig = require("./config.prod");
-    break;
-  default:
-    break;
-}
-
 module.exports = {
   token: "",
   useProxy: false,
@@ -30,6 +14,5 @@ module.exports = {
     telegram_id: "",
     username: "",
     role: "Admin"
-  },
-  ...overwriteConfig
+  }
 };
