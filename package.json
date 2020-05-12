@@ -19,19 +19,19 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
-    "dayjs": "^1.8.20",
-    "mongoose": "^5.8.10",
+    "dayjs": "^1.8.26",
+    "mongoose": "^5.9.13",
     "socks5-https-client": "^1.2.1",
-    "telegraf": "^3.36.0",
+    "telegraf": "^3.38.0",
     "telegraf-update-logger": "^1.1.7",
     "xlsx": "^0.16.0"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-plugin-import": "^2.20.1",
+    "eslint": "^7.0.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-sonarjs": "^0.5.0",
-    "nodemon": "^2.0.2",
+    "nodemon": "^2.0.3",
     "standard-version": "^8.0.0"
   }
 }
