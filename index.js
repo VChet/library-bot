@@ -20,6 +20,7 @@ bot.use(updateLogger({ colors: true }));
 bot.use(session());
 bot.use(middleware);
 bot.launch().then(() => {
+  if (!bot.polling.started) process.exit(1);
   console.log(`Bot started as ${bot.options.username}`);
   require("./src/sceneHandler");
 });
