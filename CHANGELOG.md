@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.2](https://github.com/VChet/library-bot/compare/v1.5.1...v1.5.2) (2020-08-06)
+
+
+### Bug Fixes
+
+* **config:** remove config overwriting ([76b1993](https://github.com/VChet/library-bot/commit/76b19935810a369975a07f980dc34a41cd017e89))
+* **main:** exit process on launch error ([b4bd1a6](https://github.com/VChet/library-bot/commit/b4bd1a65f9f270599fa5e126fee731dc7be69f49))
+* **user:** remove required flag from chat_id ([359816e](https://github.com/VChet/library-bot/commit/359816e0ce1e0d6037bfd11a736adc4a0c4c3a5b))
+
 ### [1.5.1](https://github.com/VChet/library-bot/compare/v1.5.0...v1.5.1) (2020-03-15)
 
 
