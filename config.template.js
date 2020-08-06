@@ -8,7 +8,7 @@ module.exports = {
     password: ""
   },
   // mongoUrl: "mongodb://localhost/library-bot",
-  mongoUrl: "mongodb://user:password@database.mlab.com:port/library-bot",
+  mongoUrl: "mongodb://<user>:<password>@<server>:<port>/<database>",
   userValidation: true,
   initDefaultBooks: false,
   defaultAdmin: {
