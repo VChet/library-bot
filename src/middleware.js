@@ -1,6 +1,5 @@
 const { User } = require("./db/User");
 const { replyWithError } = require("./components/error");
-const config = require("../config");
 
 function updateUser(ctx) {
   if (
@@ -38,7 +37,7 @@ async function middleware(ctx, next) {
     // Update DB data
     updateUser(ctx);
     // Check if user is validated
-    if (config.userValidation && ctx.session.user.role === "Guest") {
+    if (process.env.USER_VALIDATION === "true" && ctx.session.user.role === "Guest") {
       return ctx.reply("Аккаунт ожидает подтверждения");
     }
     next();

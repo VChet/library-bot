@@ -1,9 +1,9 @@
 /* eslint-disable global-require */
+require("dotenv").config();
 const Telegraf = require("telegraf");
 const updateLogger = require("telegraf-update-logger");
 const session = require("telegraf/session");
 
-const config = require("./config");
 const { connectToDB } = require("./database");
 const { socksAgent } = require("./src/components/socksAgent");
 const { middleware } = require("./src/middleware");
@@ -11,11 +11,11 @@ const { middleware } = require("./src/middleware");
 connectToDB();
 
 let proxy = {};
-if (config.useProxy) {
+if (process.env.PROXY_ENABLED === "true") {
   proxy = { telegram: { agent: socksAgent } };
 }
 
-const bot = new Telegraf(config.token, proxy);
+const bot = new Telegraf(process.env.BOT_TOKEN, proxy);
 bot.use(updateLogger({ colors: true }));
 bot.use(session());
 bot.use(middleware);

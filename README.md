@@ -20,9 +20,9 @@ Uses Node.js, MongoDB, Telegraf.js
 1. Clone repository
 1. Install [Node.js](https://nodejs.org/en/download/package-manager/)
 1. Install all dependencies `npm install`
-1. Copy `config.template.js`, rename it to `config.js` and configure.
+1. Copy `.env.template`, rename it to `.env` and configure.
     ```sh
-    cp config.template.js config.js
+    cp .env.template .env
     ```
 1. Connect to database (skip if using remote DB)
     * Install [mongoDB](https://www.mongodb.com/download-center/community)

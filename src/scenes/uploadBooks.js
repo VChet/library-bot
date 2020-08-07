@@ -5,7 +5,6 @@ const axios = require("axios");
 const XLSX = require("xlsx");
 const { socksAgent } = require("../components/socksAgent");
 
-const config = require("../../config");
 const { Book } = require("../db/Book");
 const { Category } = require("../db/Category");
 const { replyWithError } = require("../components/error");
@@ -76,9 +75,9 @@ uploadBooksScene.on("document", ctx => {
   ctx.telegram.getFile(fileId)
     .then(fileData => {
       let httpsAgent;
-      if (config.useProxy) { httpsAgent = socksAgent; }
+      if (process.env.PROXY_ENABLED === "true") { httpsAgent = socksAgent; }
       axios({
-        url: `https://api.telegram.org/file/bot${config.token}/${fileData.file_path}`,
+        url: `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${fileData.file_path}`,
         method: "GET",
         responseType: "arraybuffer",
         httpsAgent

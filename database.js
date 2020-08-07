@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 
-const config = require("./config");
 const { initCollections } = require("./models/init");
 
 function connectToDB() {
-  mongoose.connect(config.mongoUrl, {
+  mongoose.connect(process.env.MONGO_URL, {
     useCreateIndex: true,
     useFindAndModify: false,
     useNewUrlParser: true,

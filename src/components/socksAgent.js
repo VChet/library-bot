@@ -1,10 +1,8 @@
 const Agent = require("socks5-https-client/lib/Agent");
 
-const config = require("../../config");
-
 exports.socksAgent = new Agent({
-  socksHost: config.proxy.host,
-  socksPort: config.proxy.port,
-  socksUsername: config.proxy.username,
-  socksPassword: config.proxy.password,
+  socksHost: process.env.PROXY_HOST,
+  socksPort: Number(process.env.PROXY_PORT),
+  socksUsername: process.env.PROXY_USERNAME,
+  socksPassword: process.env.PROXY_PASSWORD,
 });

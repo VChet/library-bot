@@ -1,7 +1,6 @@
 const { Category } = require("./category");
 const { Book } = require("./book");
 const { User } = require("./user");
-const config = require("../config");
 const { books: defaultBooks } = require("./data_books");
 
 async function initCollections() {
@@ -26,15 +25,19 @@ async function initCollections() {
   }
 
   async function createAdmin() {
-    const user = await User.findOne({ telegram_id: config.defaultAdmin.telegram_id }).lean();
+    const user = await User.findOne({ telegram_id: process.env.ADMIN_ID }).lean();
     if (user) return user;
 
-    const newAdmin = new User(config.defaultAdmin);
+    const newAdmin = new User({
+      telegram_id: process.env.ADMIN_ID,
+      username: process.env.ADMIN_USERNAME,
+      role: "Admin"
+    });
     return newAdmin.save();
   }
 
   const category = await createCategory();
-  if (config.initDefaultBooks) createBooks(category);
+  if (process.env.INIT_BOOKS === "true") createBooks(category);
   createAdmin();
 }
 
