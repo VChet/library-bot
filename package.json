@@ -14,21 +14,22 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "watch": "nodemon index.js",
     "test": "eslint **/*.js",
     "release": "standard-version"
   },
   "dependencies": {
     "axios": "^0.20.0",
-    "dayjs": "^1.8.32",
+    "dayjs": "^1.8.35",
     "dotenv": "^8.2.0",
-    "mongoose": "^5.9.27",
+    "mongoose": "^5.10.4",
     "socks5-https-client": "^1.2.1",
     "telegraf": "^3.38.0",
-    "telegraf-update-logger": "^1.1.7",
-    "xlsx": "^0.16.5"
+    "telegraf-update-logger": "^1.2.0",
+    "xlsx": "^0.16.6"
   },
   "devDependencies": {
-    "eslint": "^7.6.0",
+    "eslint": "^7.8.1",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-sonarjs": "^0.5.0",
