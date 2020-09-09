@@ -37,7 +37,7 @@ function isAdmin(ctx, next) {
   ctx.reply("Вам недоступна эта команда");
 }
 
-function aboutMeesage(ctx) {
+function aboutMessage(ctx) {
   ctx.reply(
     `Library Bot ${version}. Автор @${author}`,
     Extra.HTML().markup(m => m.inlineKeyboard(
@@ -49,7 +49,7 @@ function aboutMeesage(ctx) {
 bot.use(stage.middleware());
 
 bot.start(ctx => ctx.scene.enter("menuScene"));
-bot.command("about", aboutMeesage);
+bot.command("about", aboutMessage);
 
 bot.action("menu", ctx => ctx.scene.enter("menuScene"));
 bot.action("search", ctx => ctx.scene.enter("searchBookScene"));
