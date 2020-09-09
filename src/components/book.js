@@ -105,8 +105,32 @@ const bookComponent = {
           );
         })
         .catch(error => replyWithError(ctx, error));
+    },
+    inlineSearch(ctx) {
+      const { query } = ctx.inlineQuery;
+      if (query.length < 3) return;
+      Book.getByQuery(query)
+        .then(books => {
+          const array = books.map(bookData => {
+            const user = bookData.user ?
+              `@${bookData.user.username}` :
+              bookData.taken_by;
+            let answer = bookData.name_author;
+            answer += user ?
+              `\nСейчас у ${user}` :
+              `\nСейчас на полке "${bookData.category.name}"`;
+            return ({
+              type: "article",
+              id: bookData.id,
+              title: bookData.name,
+              description: bookData.author,
+              input_message_content: { message_text: answer }
+            });
+          });
+          return ctx.answerInlineQuery(array);
+        });
     }
-  }
+  },
 };
 
 module.exports = { book: bookComponent };
