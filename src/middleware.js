@@ -18,6 +18,7 @@ function updateUser(ctx) {
 
 async function middleware(ctx, next) {
   try {
+    if (!ctx.session) return next();
     // Update session data
     let user = await User.isExists(ctx.from.id);
     if (!user) {
