@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/VChet/library-bot/compare/v1.5.2...v1.6.0) (2020-09-09)
+
+
+### Features
+
+* **book:** add inline-mode search ([e181daa](https://github.com/VChet/library-bot/commit/e181daaf493707c5f6899db31e120c8dd6a411f6))
+
+
+### Bug Fixes
+
+* **logger:** ignore chosen_inline_result event ([b323073](https://github.com/VChet/library-bot/commit/b3230731fb83af45bd1e9bb49c485c3b1dc51505))
+* **middleware:** skip middleware when there is no session ([c6e0f12](https://github.com/VChet/library-bot/commit/c6e0f12957c94d693d048bfbb67fb7ffb3bb61e9))
+
 ### [1.5.2](https://github.com/VChet/library-bot/compare/v1.5.1...v1.5.2) (2020-08-06)
 
 
