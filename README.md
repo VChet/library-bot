@@ -15,6 +15,7 @@ Uses Node.js, MongoDB, Telegraf.js
 * Book editing (add new, edit, archive)
 * List of categories with a book count
 * Books import from excel file
+* Inline-mode: book search and its current status
 
 ## Usage
 1. Clone repository
