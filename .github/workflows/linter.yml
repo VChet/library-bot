@@ -1,19 +1,19 @@
 name: linter
-on: [push, pull_request]
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
 
 jobs:
   eslint:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest, ubuntu-latest, macOS-latest]
-        node: [10, 12]
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node }}
-    - run: npm install
-    - run: npm test
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "14"
+      - run: npm install
+      - run: npm test
