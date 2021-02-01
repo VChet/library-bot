@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.1](https://github.com/VChet/library-bot/compare/v1.6.0...v1.6.1) (2021-02-01)
+
+
+### Bug Fixes
+
+* **logger:** disable "chosen_inline_result" event filter ([efae20c](https://github.com/VChet/library-bot/commit/efae20cae1a7db1e77ce0b4ba09c0f2bf67ea98a))
+
 ## [1.6.0](https://github.com/VChet/library-bot/compare/v1.5.2...v1.6.0) (2020-09-09)
 
 
