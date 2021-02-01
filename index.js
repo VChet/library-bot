@@ -16,10 +16,7 @@ if (process.env.PROXY_ENABLED === "true") {
 }
 
 const bot = new Telegraf(process.env.BOT_TOKEN, proxy);
-bot.use(updateLogger({
-  filter: update => !update.chosen_inline_result,
-  colors: true
-}));
+bot.use(updateLogger({ colors: true }));
 bot.use(session());
 bot.use(middleware);
 bot.launch().then(() => {
