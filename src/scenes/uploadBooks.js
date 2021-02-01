@@ -20,39 +20,41 @@ async function parseXLSX(fileData) {
   const wb = XLSX.read(fileData);
   const ws = wb.Sheets[wb.SheetNames[0]];
   const data = XLSX.utils.sheet_to_json(ws, {
-    header: 1,
-    blankrows: false,
-    range: 2
+    header: 1, // Generate an array of arrays
+    blankrows: false, // Skip blank lines
+    range: 2 // Start from this row
   });
 
   const formatted = [];
-  let category = {};
   for (const row of data) {
-    if (row.length < 3) continue;
+    if (row.length < 3) continue; // Skip row if it doesnt have 3 filled columns
 
-    if (row[0]) {
-      const categoryString = removeBreaks(titleCase(row[0]));
-      if (categoryString !== category.name) {
-        category = await Category.getByName(categoryString);
-        if (!category) category = await Category.addOne(categoryString);
+    const [categoryString, name, author, takenBy] = row;
+    let categoryObj = {};
+
+    if (categoryString) {
+      const formattedString = removeBreaks(titleCase(categoryString));
+      if (formattedString !== categoryObj.name) {
+        categoryObj = await Category.getByName(categoryString);
+        if (!categoryObj) categoryObj = await Category.addOne(categoryString);
       }
     }
 
     formatted.push({
-      category,
-      name: removeBreaks(row[1]),
-      author: removeBreaks(row[2]),
-      taken_by: row[3] && removeBreaks(row[3])
+      category: categoryObj,
+      name: removeBreaks(name),
+      author: removeBreaks(author),
+      taken_by: takenBy && removeBreaks(takenBy)
     });
   }
   return formatted;
 }
 
 uploadBooksScene.enter(ctx => {
-  ctx.editMessageText(
-    "Загрузите файл в формате xlsx.\n\
-    Пропуск первых 2 строк\n\
-    Столбцы: Раздел|Название|Автор|Кому выдана",
+  const message = [];
+  message.push("Загрузите файл в формате xlsx.");
+  message.push("Столбцы: Раздел|Название|Автор|Кому выдана");
+  ctx.editMessageText(message.join("\n"),
     Extra.HTML().markup(m =>
       m.inlineKeyboard([m.callbackButton("Отмена", "menu")])
     )
